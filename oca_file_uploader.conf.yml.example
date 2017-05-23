@@ -1,0 +1,6 @@
+---
+apiVer: "2.9"  # VERSION_OF_MARKETING_API ex) 2.X
+dataSetId: MY_OFFLINE_DATA_SET_ID
+inputFilePath: /PATH/TO/FEED/FILE
+fileDelimiter: ","  # options:  ',', '\t', ' ', '|', ';'
+uploadTagPrefix: Offline Conversions

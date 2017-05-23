@@ -1,0 +1,25 @@
+{
+  "header": true,
+  "delimiter": ",",
+  "mapping": {
+    "0": "match_keys.email",
+    "13": "match_keys.dob",
+    "17": "event_name",
+    "18": "event_time",
+    "19": "value",
+    "20": "currency",
+    "21": "custom_data.store_num"
+  },
+  "infoForNormalization": {
+    "dob": "MM/DD/YY",
+    "event_time": {
+      "timeFormat": "ISO8601"
+    }
+  },
+  "customTypeInfo": {
+    "store_num": {
+      "key": "store_num",
+      "baseType": "number"
+    }
+  }
+}

@@ -1,0 +1,11 @@
+[include]
+
+[libs]
+
+[options]
+
+[ignore]
+.*/build/.*
+.*/dist/.*
+.*/tmp/.*
+.*main.js

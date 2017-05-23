@@ -1,0 +1,11 @@
+---
+parser: babel-eslint
+
+extends:
+  - ./node_modules/fbjs-scripts/eslint/.eslintrc.js
+
+plugins:
+  - react
+  - flow-vars
+
+root: true

@@ -1,0 +1,5 @@
+{
+  "project_id" : "offline-conversions-file-uploader",
+  "conduit_uri" : "https://phabricator.fb.com/api/",
+  "git.default-relative-commit" : "origin/master"
+}

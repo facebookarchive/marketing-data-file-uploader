@@ -1,0 +1,11 @@
+.DS_Store
+.npm-debug.log
+node_modules
+npm-debug.log
+build
+dist
+tmp
+logs
+oca_file_uploader.conf.yml
+oca_column_mapping.json
+offline-conversions-file-uploader-*.tgz
