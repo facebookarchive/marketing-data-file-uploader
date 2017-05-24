@@ -53,7 +53,7 @@ $ node your_app.js --accessToken YOUR_ACCESS_TOKEN... --uploadTagPrefix "Offline
 $ git clone https://github.com/facebookincubator/offline-conversions-file-uploader
 
 $ npm install
-$ npm run build-all (or build-exe for Windows)
+$ npm run build-binary (or build-binary-exe for Windows)
 $./build/offline-conversions-file-uploader --accessToken YOUR_ACCESS_TOKEN... --uploadTagPrefix "Offline Sales xx/xx/xxxx"...
 
 2017-05-15T15:52:52.265Z INFO Posting events 1 - 500 to http://graph.facebook.com/v2.9/00000000000000/events
@@ -153,7 +153,7 @@ If you added custom_data.store_num as one of the mapped columns in "mapping", yo
 }
 ```
 
-#### FAQ
+### FAQ
 
 1. My company has firewall which will block API calls to Facebook.  What are my options?
   - Whitelist FB IP's:  Contact your security team to whitelist IP addresses returned by this command:  
@@ -167,6 +167,12 @@ If you added custom_data.store_num as one of the mapped columns in "mapping", yo
 2. My company does not support running node.js.  Can we still use file uploader?
   - Pre-built binary executable files are available.  Please contact FB team for access to these files.  If your company has node.js install on any one of the machines, you could also try building these binary files using **Option 3** above in the *Installing FB Offline Conversions File Uploader* section.l
 
+### Code organization
+- **/lib**: Source code Transpiled to ES5 for npm
+- **/src**: Original source code written in ES6 with FB's flow type system
+- /cli.js: For when using OCAFU as command line tool
+- /index.js: For when requiring OCAFU as a module
+- /nexe.js: For building binary file with nexe
 
 ## License
 FB Offline Conversions File Uploader is BSD-licensed. We also provide an additional patent grant.
