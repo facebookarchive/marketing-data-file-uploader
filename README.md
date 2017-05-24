@@ -69,6 +69,7 @@ This is a node.js application that will go through following steps to upload you
 3. For each line read, columns are normalized and hashed for upload.
 4. Collect normalized and hashed data into batches (per batch size configured.  Default: 500)
 5. POST each batch to the API endpoint
+6. *How the binary is built*: Binary file containing node runtime is built using an open source utility called [nexe](https://github.com/nexe/nexe).
 
 ## How to use OCAFU
 
