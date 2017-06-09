@@ -28,31 +28,39 @@ export const uploadEventsBatch = (
   // Do the real uploading (calling into graph API) if not silent.
   if (configs.silent !== true) {
     getLogger().info(
-      `Posting events ${getBatchSigStr({offset: fileOffset, size: events.length})} to \
+      `Posting rows ${getBatchSigStr({offset: fileOffset, size: events.length})} to \
 ${datasetEndpoint(configs.dataSetId, configs.apiVer)}/events`
     );
     _postEvents(events, fileOffset, configs, uploadSessionTag, callback);
   } else {
     getLogger().info('Silent Mode');
-    callback(null, {offset: fileOffset, size: events.length});
+    callback(null, fileOffset, events);
   }
 };
 
 export const batchUploadCallback = (
   err: Error,
-  batchInfo: EventBatchSignature,
+  fileOffset: number,
+  events: Array<Object>,
 ): void => {
   if (err === null) {
-    getLogger().info(`Rows ${getBatchSigStr(batchInfo)} - Successfully uploaded ${batchInfo.size} events.`);
+    getLogger().info(
+      `Rows ${getBatchSigStr({offset: fileOffset, size: events.length})} - ` +
+      `Successfully uploaded ${_getValidEvents(events).length} events.`
+    );
   } else {
-    getLogger().error(`Rows ${getBatchSigStr(batchInfo)} - Error uploading ${batchInfo.size} events: ` +
-      err.message);
+    getLogger().error(
+      `Rows ${getBatchSigStr({offset: fileOffset, size: events.length})} ` +
+      `- Error uploading ${_getValidEvents(events).length} events: ` +
+      err.message
+    );
   }
 };
 
 export type batchUploadCallbackType = (
   err: ?Error,
-  batchInfo: EventBatchSignature,
+  fileOffset: number,
+  events: Array<Object>,
 ) => void;
 
 const _postEvents = (
@@ -62,8 +70,9 @@ const _postEvents = (
   uploadSessionTag: string,
   callback: batchUploadCallbackType,
 ): void => {
+  const validEvents = _removeInvalidEvents(events, fileOffset)
   const postData = querystring.stringify({
-    'data' : JSON.stringify(events),
+    'data' : JSON.stringify(validEvents),
     'access_token': configs.accessToken,
     'upload_tag': uploadSessionTag,
   });
@@ -93,14 +102,15 @@ const _postEvents = (
       );
       callback(
         res.statusCode === 200 ? null : new Error(d),
-        {offset: fileOffset, size: events.length},
+        fileOffset,
+        events,
       );
     });
   });
 
   req.on('error', (err) => {
     getLogger().error(`${fileOffset+1} - ${fileOffset+events.length}: ${err.message}`);
-    callback(null, {offset: fileOffset, size: events.length});
+    callback(null, fileOffset, events);
   });
 
   req.write(postData);
@@ -110,4 +120,44 @@ const _postEvents = (
     uploadSessionTag,
     {offset: fileOffset, size: events.length}
   );
+};
+
+const _removeInvalidEvents = (
+  events: Array<Object>,
+  fileOffset, number,
+): Array<Object> => {
+  const ommitedRows = _getNullElementOffsets(events, fileOffset).join(',');
+  if (ommitedRows.length > 0) {
+    getLogger().warn(
+      `Omitting invalid rows: ${_getNullElementOffsets(events, fileOffset).join(',')}`
+    );
+  }
+  return _getValidEvents(events);
+};
+
+const _getValidEvents = (
+  events: Array<Object>,
+): Array<Object> => {
+  return events.filter(_isValidEvent);
+};
+
+const _getNullElementOffsets = (
+  events: Array<Object>,
+  fileOffset, number,
+): Array<string> => {
+  return events.reduce(
+    (offsets, event, index) => {
+      if (!_isValidEvent(event)) {
+        offsets.push(`${fileOffset + 1 + index}`);
+      }
+      return offsets;
+    },
+    []
+  );
+};
+
+const _isValidEvent = (
+  event: Object,
+): boolean => {
+  return event !== null;
 };

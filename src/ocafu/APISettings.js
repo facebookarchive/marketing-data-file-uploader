@@ -9,7 +9,7 @@
  * @flow
  */
 
-const GRAPH_API_BASE_URL = 'http://graph.facebook.com';
+const GRAPH_API_BASE_URL = 'https://graph.facebook.com';
 
 export const datasetEndpoint = (
   dataSetId: string,

@@ -1,0 +1,9 @@
+# Change Log
+
+All notable changes to this project will be documented in this file.
+
+## 1.0.1 - 2017-06-09
+
+- Fixed a bug where an event rejected by the normalizer, this returned as null, is submitted to the API and causes API error. 
+- Fixed typos in package.json
+
