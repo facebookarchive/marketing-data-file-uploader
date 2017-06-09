@@ -87,7 +87,6 @@ Configuration options can either be stored in a file (.yml format) or passed in 
 |Option       |Description        | default |
 |-------------|-------------------|---------|
 |accessToken*  |  Access token for API call |  |
-|apiVer| Version of FB marketing API used | v2.9 |
 |columnMappingFilePath| File containing column mapping info. For more info see **Column Mapping File** section below.|oca_column_mapping.json in current directory|
 |configFilePath*| File containing offline conversions data|   oca_file_uploader.conf.yml in current directory.  For more info about config options see **Available Configuration options** section below.|
 |dataSetId| ID of your offline event data set| |

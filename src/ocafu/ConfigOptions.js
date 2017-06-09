@@ -9,7 +9,7 @@
  * @flow
  */
 
-import { FILE_DELIMITERS, SUPPORTED_API_VERSIONS } from './FeedUploaderConstants';
+import { FILE_DELIMITERS } from './FeedUploaderConstants';
 
 const winston = require('winston');
 
@@ -25,13 +25,6 @@ export const CONFIG_OPTIONS = [
   {
     field: 'accessToken',
     description: 'Access token for API call',
-  },
-  {
-    field: 'apiVer',
-    validator: (apiVer: string) => {
-      return SUPPORTED_API_VERSIONS.find(ver => ver === apiVer);
-    },
-    description: 'Version of FB marketing API used',
   },
   {
     field: 'dataSetId',

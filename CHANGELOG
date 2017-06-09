@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## 1.0.1 - 2017-06-09
 
-- Fixed a bug where an event rejected by the normalizer, this returned as null, is submitted to the API and causes API error. 
+- Fixed a bug where an event rejected by the normalizer, this returned as null, is submitted to the API and causes API error.
 - Fixed typos in package.json
 
+## 1.0.2 - 2017-06-09
+
+- API version is no longer a config option.  Since feature set used by the tool is closely tied to API version, users should not try to use different version of API.  API version will be updated as part of updates for this tool.

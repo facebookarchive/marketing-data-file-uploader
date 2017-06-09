@@ -10,10 +10,10 @@
  */
 
 const GRAPH_API_BASE_URL = 'https://graph.facebook.com';
+import { MARKETING_API_VER } from './FeedUploaderConstants';
 
 export const datasetEndpoint = (
   dataSetId: string,
-  apiVer: string,
 ): string => {
-  return `${GRAPH_API_BASE_URL}/v${apiVer}/${dataSetId}`;
+  return `${GRAPH_API_BASE_URL}/v${MARKETING_API_VER}/${dataSetId}`;
 };

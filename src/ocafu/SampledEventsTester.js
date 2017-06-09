@@ -89,7 +89,7 @@ const checkSampledEvents = (
   configs: FeedUploaderConfigs,
   callback: (err: ?Error) => void,
 ): void => {
-  getLogger().info("STEP 1. Sampled events validation test")
+  getLogger().info('STEP 1. Sampled events validation test');
   const err = checkInvalidSignalRate(normalizedEvents);
   if (err) {
     callback(err);

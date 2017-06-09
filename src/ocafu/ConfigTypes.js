@@ -20,7 +20,6 @@ import type {
 // 3) command line arguments to build this.
 export type FeedUploaderConfigs = {
   accessToken: string;
-  apiVer: string;
   batchSize: number;
   colMappingInfo: ColumnMappingInfo;
   columnMappingFilePath?: string,
@@ -39,7 +38,6 @@ export type FeedUploaderConfigs = {
 // Type for handling data read from config flie or command line args
 export type UserSuppliedConfigs = {
   accessToken?: string;
-  apiVer?: string;
   columnMappingFilePath?: string;
   configFilePath?: string;
   dataSetId?: string;

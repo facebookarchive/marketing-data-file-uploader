@@ -11,7 +11,6 @@
 
 import { datasetEndpoint } from './APISettings';
 import type { FeedUploaderConfigs } from './ConfigTypes';
-import type { EventBatchSignature } from './UploadSession';
 import { getBatchSigStr, logBatchUploadStart, logBatchUploadEnd } from './UploadSession';
 import { getLogger } from './Logger';
 
@@ -29,7 +28,7 @@ export const uploadEventsBatch = (
   if (configs.silent !== true) {
     getLogger().info(
       `Posting rows ${getBatchSigStr({offset: fileOffset, size: events.length})} to \
-${datasetEndpoint(configs.dataSetId, configs.apiVer)}/events`
+${datasetEndpoint(configs.dataSetId)}/events`
     );
     _postEvents(events, fileOffset, configs, uploadSessionTag, callback);
   } else {
@@ -70,7 +69,7 @@ const _postEvents = (
   uploadSessionTag: string,
   callback: batchUploadCallbackType,
 ): void => {
-  const validEvents = _removeInvalidEvents(events, fileOffset)
+  const validEvents = _removeInvalidEvents(events, fileOffset);
   const postData = querystring.stringify({
     'data' : JSON.stringify(validEvents),
     'access_token': configs.accessToken,
@@ -82,7 +81,7 @@ const _postEvents = (
   const options = {
     hostname: 'graph.facebook.com',
     port: 443,
-    path: `${datasetEndpoint(configs.dataSetId, configs.apiVer)}/events`,
+    path: `${datasetEndpoint(configs.dataSetId)}/events`,
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',

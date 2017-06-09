@@ -55,7 +55,7 @@ const buildUploadTagWithPrefix = (
   uploadTagPrefix: string,
   filePath: string,
 ): string => {
-  return `${uploadTagPrefix} (${getFileSignature(filePath)})`
+  return `${uploadTagPrefix} (${getFileSignature(filePath)})`;
 };
 
 const getFileSignature = (
