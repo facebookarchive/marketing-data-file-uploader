@@ -8,5 +8,4 @@ tmp
 logs
 oca_file_uploader.conf.yml
 oca_column_mapping.json
-offline-conversions-file-uploader-*.tgz
 .arcconfig

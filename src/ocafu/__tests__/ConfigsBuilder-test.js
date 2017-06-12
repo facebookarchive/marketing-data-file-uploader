@@ -17,7 +17,6 @@ const TEST_COL_MAPPING_FILE_PATH
   = path.join(__dirname, 'test_column_mapping_file.json');
 
 const TEST_SAMPLE_CONFIG = {
-  apiVer: '2.8',
   accessToken: 'ABCDE',
   dataSetId: 38373873832838,
   inputFilePath: '/PATH/TO/FEED/FILE',
@@ -73,11 +72,9 @@ describe('buildConfigs', () => {
       'OfflinConversionsFeedUploader.js',
       '--configFilePath', TEST_CONFIG_FILE_PATH,
       '--accessToken', 'ABCDE',
-      '--apiVer', '2.9',
       '--inputFilePath', '/NEW/FILE/PATH'
     ]);
     expect(err).toBeNull();
-    expect(configs.apiVer).toEqual('2.9');
     expect(configs.inputFilePath).toEqual('/NEW/FILE/PATH');
   });
 
@@ -87,24 +84,11 @@ describe('buildConfigs', () => {
       'OfflinConversionsFeedUploader.js',
       '--configFilePath', TEST_CONFIG_FILE_PATH,
       '--accessToken', 'ABCDE',
-      '--apiVer', '2.9',
       '--inputFilePath', '/NEW/FILE/PATH',
       '--randomArg', 'randomArgValue',
     ]);
     expect(err).toBeNull();
     expect(configs.randomArg).toBeUndefined();
     expect(configs.unKnownOption).toBeUndefined();
-  });
-
-  it('should return error for invalid api version provided', () => {
-    const {err} = buildConfigs([
-      'node',
-      'OfflinConversionsFeedUploader.js',
-      '--configFilePath', TEST_CONFIG_FILE_PATH,
-      '--accessToken', 'ABCDE',
-      '--apiVer', '5.0',
-      '--inputFilePath', '/NEW/FILE/PATH'
-    ]);
-    expect(err.message).toMatch(/apiVer/);
   });
 });

@@ -10,3 +10,7 @@ All notable changes to this project will be documented in this file.
 ## 1.0.2 - 2017-06-09
 
 - API version is no longer a config option.  Since feature set used by the tool is closely tied to API version, users should not try to use different version of API.  API version will be updated as part of updates for this tool.
+
+## 1.0.3 - 2017-06-12
+
+- Project name changed to marketing-data-file-uploader from offline-conversions-file-uploader

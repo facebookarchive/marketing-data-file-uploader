@@ -1,5 +1,4 @@
 ---
-apiVer: "2.8"
 dataSetId: 38373873832838
 inputFilePath: /PATH/TO/FEED/FILE
 fileDelimiter: ","

@@ -1,13 +1,13 @@
 {
-  "name": "offline-conversions-file-uploader",
-  "version": "1.0.1",
+  "name": "marketing-data-file-uploader",
+  "version": "1.0.2",
   "description": "Feed File Uploader for Facebook Offline Conversions API",
   "scripts": {
     "babel-node": "./node_modules/.bin/babel-node",
     "build": "npm run clear-all && npm run compile",
     "build-all": "npm run clear-all && npm run compile && npm run build-binary",
-    "build-binary": "nexe -f -i nexe_main.js -o build/offline-conversions-file-uploader --runtime 6.10.3",
-    "build-binary-exe": "nexe -f -i nexe_main.js -o build/offline-conversions-file-uploader.exe --runtime 6.10.3",
+    "build-binary": "nexe -f -i nexe_main.js -o build/marketing-data-file-uploader --runtime 6.10.3",
+    "build-binary-exe": "nexe -f -i nexe_main.js -o build/marketing-data-file-uploader.exe --runtime 6.10.3",
     "build-exe": "npm run clear-all && npm run compile && npm run build-binary-exe",
     "clear-all": "node_modules/.bin/del build lib",
     "compile": "./node_modules/.bin/babel src --out-dir lib",
@@ -18,7 +18,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/facebookincubator/offline-conversions-file-uploader.git"
+    "url": "https://github.com/facebookincubator/marketing-data-file-uploader.git"
   },
   "main": "index.js",
   "bin": "cli.js",
@@ -32,7 +32,7 @@
     "name": "Ryan Her",
     "email": "ryanher@fb.com"
   },
-  "bugs": "https://github.com/facebookincubator/offline-conversions-file-uploader/issues",
+  "bugs": "https://github.com/facebookincubator/marketing-data-file-uploader/issues",
   "devDependencies": {
     "babel-cli": "6.24.0",
     "babel-eslint": "7.1.0",

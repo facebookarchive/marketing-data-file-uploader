@@ -19,7 +19,6 @@ describe('readConfigsFromFile', () => {
       path.join(__dirname, 'test_config_reader.yml')
     );
     expect(configs).toEqual({
-      apiVer: '2.8',
       dataSetId: 38373873832838,
       inputFilePath: '/PATH/TO/FEED/FILE',
       fileDelimiter: ',',
