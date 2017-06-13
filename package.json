@@ -1,6 +1,6 @@
 {
   "name": "marketing-data-file-uploader",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Feed File Uploader for Facebook Offline Conversions API",
   "scripts": {
     "babel-node": "./node_modules/.bin/babel-node",
@@ -47,7 +47,7 @@
     "eslint-plugin-flow-vars": "0.4.0",
     "eslint-plugin-react": "6.10.3",
     "fbjs-scripts": "0.7.1",
-    "flow-bin": "0.46.0",
+    "flow-bin": "0.47.0",
     "jest-cli": "19.0.2",
     "nexe": "^1.1.2",
     "node-inspector": "0.12.8"

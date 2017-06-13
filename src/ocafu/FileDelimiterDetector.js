@@ -9,7 +9,7 @@
  * @flow
  */
 
-import { DEFAULT_DELIMITER_DETECT_SIZE, FILE_DELIMITERS, LINE_BREAK }
+import { DEFAULT_DELIMITER_DETECT_SIZE, FILE_DELIMITERS, LINE_BREAK_REGEX }
   from './FeedUploaderConstants';
 import { FILE_DELIMITER_NOT_DETECTED } from './FeedUploaderErrorTypes';
 import { getLogger } from './Logger';
@@ -71,7 +71,7 @@ const readSampleLines = (
   let linesRead = [];
 
   rstream
-    .pipe(es.split(LINE_BREAK))
+    .pipe(es.split(LINE_BREAK_REGEX))
     .pipe(es.mapSync(line => {
       if (line.length > 0) {
         linesRead.push(line);

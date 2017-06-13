@@ -17,6 +17,7 @@ const TEST_COL_MAPPING_FILE_PATH
   = path.join(__dirname, 'test_column_mapping_file.json');
 
 const TEST_SAMPLE_CONFIG = {
+  mode: 'offline-conversions',
   accessToken: 'ABCDE',
   dataSetId: 38373873832838,
   inputFilePath: '/PATH/TO/FEED/FILE',
@@ -58,6 +59,7 @@ describe('buildConfigs', () => {
     const {configs, err} = buildConfigs([
       'node',
       'OfflinConversionsFeedUploader.js',
+      'offline-conversions',
       '--configFilePath', TEST_CONFIG_FILE_PATH,
       '--accessToken', 'ABCDE',
       '--columnMappingFilePath', TEST_COL_MAPPING_FILE_PATH,
@@ -70,6 +72,7 @@ describe('buildConfigs', () => {
     const {configs, err} = buildConfigs([
       'node',
       'OfflinConversionsFeedUploader.js',
+      'offline-conversions',
       '--configFilePath', TEST_CONFIG_FILE_PATH,
       '--accessToken', 'ABCDE',
       '--inputFilePath', '/NEW/FILE/PATH'
@@ -82,6 +85,7 @@ describe('buildConfigs', () => {
     const {configs, err} = buildConfigs([
       'node',
       'OfflinConversionsFeedUploader.js',
+      'offline-conversions',
       '--configFilePath', TEST_CONFIG_FILE_PATH,
       '--accessToken', 'ABCDE',
       '--inputFilePath', '/NEW/FILE/PATH',

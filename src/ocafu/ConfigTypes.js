@@ -19,6 +19,7 @@ import type {
 // ConfigsBuilder reads values from 1) default values, 2) config file, and
 // 3) command line arguments to build this.
 export type FeedUploaderConfigs = {
+  mode: string;
   accessToken: string;
   batchSize: number;
   colMappingInfo: ColumnMappingInfo;
@@ -37,6 +38,7 @@ export type FeedUploaderConfigs = {
 
 // Type for handling data read from config flie or command line args
 export type UserSuppliedConfigs = {
+  mode?: string;
   accessToken?: string;
   columnMappingFilePath?: string;
   configFilePath?: string;

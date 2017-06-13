@@ -16,6 +16,8 @@ export const DEFAULT_DELIMITER_DETECT_SIZE = 20;
 
 export const FILE_DELIMITERS = [',', '\t', ' ', '|', ';'];
 
+export const SUPPORTED_MODES = ['offline-conversions', 'custom-audiences'];
+
 export const DEFAULT_APP_CONFIGS = {
   batchSize: 500,
   logging: 'info',
@@ -24,7 +26,7 @@ export const DEFAULT_APP_CONFIGS = {
 
 export const MIN_TEST_SAMPLE_SIZE = 100;
 
-export const LINE_BREAK = /\r\n?|\n/;
+export const LINE_BREAK_REGEX = /\r\n?|\n/;
 
 export const NORMALIZATION_ERROR_THRESHOLD = 0.1;
 

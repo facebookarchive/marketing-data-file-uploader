@@ -14,8 +14,18 @@
 import { buildConfigs } from '../ConfigsBuilder';
 
 describe('buildConfigs', () => {
-  it('should return error when required config is missing', () => {
+  it('should return error when command is missing', () => {
     const {err} = buildConfigs(['node', 'somefile']);
+    expect(err.message).toMatch(/Command is not specified.*/);
+  });
+
+  it('should return error when command is unknown', () => {
+    const {err} = buildConfigs(['node', 'somefile', 'somecommand']);
+    expect(err.message).toMatch(/Command is not specified.*/);
+  });
+
+  it('should return error when required config is missing', () => {
+    const {err} = buildConfigs(['node', 'somefile', 'offline-conversions']);
     expect(err.message).toMatch(/Missing.*\n.*accessToken/i);
   });
 });

@@ -36,9 +36,13 @@ describe('readConfigsFromFile', () => {
 
 describe('readConfigsFromCommandLineArgs', () => {
   it('should read config values from command line arguments', () => {
-    const configs = readConfigsFromCommandLineArgs(
-      ['node', 'OfflinConversionsFeedUploader.js', '--accessToken', 'ABCDE']
-    );
+    const configs = readConfigsFromCommandLineArgs([
+      'node',
+      'OfflinConversionsFeedUploader.js',
+      'offline-conversions',
+      '--accessToken',
+      'ABCDE',
+    ]);
     expect(configs.accessToken).toEqual('ABCDE');
   });
 });

@@ -13,6 +13,7 @@ import { buildUploadsQueue, scheduleBatchUpload } from './BatchUploadScheduler';
 import { parseAndNormalizeFeedLine } from './FeedFileParser';
 import { createUploadSessionTag } from './UploadSession';
 import { getLogger } from './Logger';
+import { LINE_BREAK_REGEX } from './FeedUploaderConstants'
 
 import type { FeedUploaderConfigs } from './ConfigTypes';
 
@@ -38,7 +39,7 @@ export const parseAndNormalizeFeedFile = (
   getLogger().info(`Upload tag: ${uploadSessionTag}`);
 
   rstream
-    .pipe(split())
+    .pipe(split(LINE_BREAK_REGEX))
     .pipe(es.mapSync(line => {
       linesRead += 1;
       if (linesRead === 1 && configs.fileHasHeader) {

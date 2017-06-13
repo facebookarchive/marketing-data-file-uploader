@@ -78,8 +78,6 @@ This is a node.js application that will go through following steps to upload you
 3. Get access token for API calls
 4. Run on command line or schedule execution with tools such as crontab
 
-
-
 ### Available Configuration options
 
 Configuration options can either be stored in a file (.yml format) or passed in as command line arguments.  See following for available options:

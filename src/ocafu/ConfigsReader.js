@@ -11,12 +11,13 @@
 
 import { CONFIG_OPTIONS } from './ConfigOptions';
 import { ERROR_CANNOT_PARSE_CONFIG_FILE } from './ErrorTypes';
+import { SUPPORTED_MODES } from './FeedUploaderConstants';
 
 const fs = require('fs');
 
 import type { UserSuppliedConfigs } from './ConfigTypes';
 
-const program = require('commander');
+const commander = require('commander');
 const yaml = require('js-yaml');
 
 export const readConfigsFromFile = (
@@ -32,7 +33,11 @@ export const readConfigsFromFile = (
 export const readConfigsFromCommandLineArgs = (
   commandLineArgs: Array<string> = process.argv,
 ): UserSuppliedConfigs => {
-  CONFIG_OPTIONS.reduce((program: program.Command, configOption) => {
+  const program = new commander.Command();
+  CONFIG_OPTIONS.reduce((
+    program: commander.Command,
+    configOption,
+  ): commander.Command => {
     if (!configOption.fileOnly) {
       if (configOption.noValue) {
         program.option(`--${configOption.field}`,
@@ -43,7 +48,15 @@ export const readConfigsFromCommandLineArgs = (
       }
     }
     return program;
-  }, program.allowUnknownOption()).parse(commandLineArgs);
+  }, program.allowUnknownOption());
+
+  SUPPORTED_MODES.forEach((mode) => {
+    program.command(mode).allowUnknownOption().action(function() {
+      program.mode = mode;
+    });
+  });
+
+  program.parse(commandLineArgs);
   return filterOptions(program);
 };
 
@@ -51,10 +64,12 @@ export const readConfigsFromCommandLineArgs = (
 const filterOptions = (
   parsedOptions: Object,
 ): UserSuppliedConfigs => {
-  return CONFIG_OPTIONS.reduce((configs, configOption) => {
+  const configs = CONFIG_OPTIONS.reduce((configs, configOption) => {
     if (parsedOptions[configOption.field] !== undefined) {
       configs[configOption.field] = parsedOptions[configOption.field];
     }
     return configs;
   }, {});
+  configs.mode = parsedOptions.mode; // keep the mode
+  return configs;
 };

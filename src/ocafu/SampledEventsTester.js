@@ -14,7 +14,8 @@ import { getLogger } from './Logger';
 import { parseAndNormalizeFeedLine } from './FeedFileParser';
 import {
   NORMALIZATION_ERROR_THRESHOLD,
-  MIN_TEST_SAMPLE_SIZE
+  MIN_TEST_SAMPLE_SIZE,
+  LINE_BREAK_REGEX,
 } from './FeedUploaderConstants';
 import { ERROR_SAMPLE_NORMALIZATION_ERRORS } from './ErrorTypes';
 
@@ -40,7 +41,7 @@ export const testSampledEvents = (
     .on('error', (err) => {
       callback(err);
     })
-    .pipe(split())
+    .pipe(split(LINE_BREAK_REGEX))
     .pipe(batchHandler)
     .pipe(through.obj((batch, enc, cb) => {
       if (batch.length > 0) {

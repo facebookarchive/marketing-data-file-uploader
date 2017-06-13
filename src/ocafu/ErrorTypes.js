@@ -4,6 +4,14 @@
  * @flow
  */
 
+import { SUPPORTED_MODES } from './FeedUploaderConstants'
+
+export const ERROR_NO_MODE =
+  'Command is not specified. Avaialbe ones are:\n' +
+  SUPPORTED_MODES.join('\n') + '\n\nExample:\n\n' +
+  'marketing-data-file-uploader offline-conversions ' +
+  '--columnMappingFilePath oca_column_mapping.json.example ' +
+  '--configFilePath oca_file_uploader.conf.yml.example';
 export const ERROR_CANNOT_PARSE_CONFIG_FILE =
   'Failed to parse the configuration file';
 export const ERROR_REQUIRED_CONFIG_OPTION_MISSING =

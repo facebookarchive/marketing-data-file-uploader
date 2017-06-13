@@ -16,12 +16,16 @@ import type { FeedUploaderConfigs }
   from './ConfigTypes';
 
 import { CONFIG_OPTIONS } from './ConfigOptions';
-import { ERROR_REQUIRED_CONFIG_OPTION_MISSING,
-         ERROR_REQUIRED_CONFIG_VALUE_INVALID } from './ErrorTypes';
+import {
+  ERROR_REQUIRED_CONFIG_OPTION_MISSING,
+  ERROR_REQUIRED_CONFIG_VALUE_INVALID,
+  ERROR_NO_MODE,
+} from './ErrorTypes';
 import {
   DEFAULT_APP_CONFIGS,
   DEFAULT_COLUMN_MAPPING_FILE,
-  DEFAULT_CONFIG_FILE
+  DEFAULT_CONFIG_FILE,
+  SUPPORTED_MODES,
 } from './FeedUploaderConstants';
 
 import type { ConfigErrorType } from './ConfigOptions';
@@ -32,6 +36,11 @@ export const buildConfigs = (
   argv: Array<string> = process.argv,
 ): {configs?: FeedUploaderConfigs, err: ?Error} => {
   const commandLineArgs = readConfigsFromCommandLineArgs(argv);
+  if (!commandLineArgs.mode ||
+      !SUPPORTED_MODES.includes(commandLineArgs.mode)) {
+    return {err: new Error(ERROR_NO_MODE)};
+  }
+
   const {
     colMappingInfo,
     fileHasHeader,
@@ -40,7 +49,7 @@ export const buildConfigs = (
   } = readColMappingFromFile(
     configFileFullPath(
       commandLineArgs.columnMappingFilePath,
-      DEFAULT_COLUMN_MAPPING_FILE
+      DEFAULT_COLUMN_MAPPING_FILE,
     )
   );
 
