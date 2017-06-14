@@ -16,6 +16,7 @@ import {
   NORMALIZATION_ERROR_THRESHOLD,
   MIN_TEST_SAMPLE_SIZE,
   LINE_BREAK_REGEX,
+  MODE_ROW_NAMES,
 } from './FeedUploaderConstants';
 import { ERROR_SAMPLE_NORMALIZATION_ERRORS } from './ErrorTypes';
 
@@ -90,8 +91,9 @@ const checkSampledEvents = (
   configs: FeedUploaderConfigs,
   callback: (err: ?Error) => void,
 ): void => {
-  getLogger().info('STEP 1. Sampled events validation test');
-  const err = checkInvalidSignalRate(normalizedEvents);
+  const rowName = MODE_ROW_NAMES[configs.mode];
+  getLogger().info(`STEP 1. Sampled ${rowName} validation test`);
+  const err = checkInvalidSignalRate(normalizedEvents, rowName);
   if (err) {
     callback(err);
   } else {
@@ -101,7 +103,9 @@ const checkSampledEvents = (
 
 const checkInvalidSignalRate = (
   normalizedEvents: Array<NormalizationResult>,
+  rowName: string,
 ): ?Error => {
+
   // Only check ratio of completed rejected signal that didn't produce
   // normalizedValue.  A signal with invalid props could still get normalized
   const numRejected = normalizedEvents.reduce((numRejected, event) => {
@@ -120,7 +124,7 @@ const checkInvalidSignalRate = (
     return new Error(
       `${ERROR_SAMPLE_NORMALIZATION_ERRORS}: \n\n`
       + humanReadableNormalizationErrors(normalizedEvents)
-      + `\n${numRejected} events could not be normalized due to error(s).\n\n`
+      + `\n${numRejected} ${rowName} could not be normalized due to error(s).\n\n`
       + '* After fixing errors in the data, try running the tool in'
       + ' --testOnly again to check the fixes.\n'
       + '* Make sure to apply the fix to the entire file, not just sample rows.\n'

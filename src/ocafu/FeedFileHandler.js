@@ -13,9 +13,20 @@ import { buildUploadsQueue, scheduleBatchUpload } from './BatchUploadScheduler';
 import { parseAndNormalizeFeedLine } from './FeedFileParser';
 import { createUploadSessionTag } from './UploadSession';
 import { getLogger } from './Logger';
-import { LINE_BREAK_REGEX } from './FeedUploaderConstants'
+import {
+  LINE_BREAK_REGEX,
+  MODE_OC,
+  MODE_CA,
+} from './FeedUploaderConstants'
+
+import {
+  buildPostRequestPayload,
+  extractCASchema,
+  removeInvalidEvents,
+} from './RequestDataBuilder';
 
 import type { FeedUploaderConfigs } from './ConfigTypes';
+import type { MappingsType } from '../SignalsSchema/SignalsSchemaValidationTypes';
 
 const es = require('event-stream');
 const fs = require('fs');
@@ -38,6 +49,11 @@ export const parseAndNormalizeFeedFile = (
 
   getLogger().info(`Upload tag: ${uploadSessionTag}`);
 
+  let caSchema;
+  if (configs.mode === MODE_CA) {
+    caSchema = extractCASchema(configs.colMappingInfo.mapping);
+  }
+
   rstream
     .pipe(split(LINE_BREAK_REGEX))
     .pipe(es.mapSync(line => {
@@ -56,13 +72,15 @@ export const parseAndNormalizeFeedFile = (
 
       if (batchData.length % configs.batchSize === 0) {
         const curBatch = batchData;
+        const validBatch = removeInvalidEvents(batchData, numEventsTotal);
         batchData = [];
         scheduleBatchUpload(
           uploadJobQueue,
           curBatch,
+          buildPostRequestPayload(validBatch, caSchema, configs, uploadSessionTag),
           numEventsTotal,
           uploadSessionTag,
-          configs
+          configs,
         );
       }
     })
@@ -71,12 +89,14 @@ export const parseAndNormalizeFeedFile = (
     })
     .on('end', () => {
       if (batchData.length > 0) {
+        const validBatch = removeInvalidEvents(batchData, numEventsTotal);
         scheduleBatchUpload(
           uploadJobQueue,
           batchData,
+          buildPostRequestPayload(validBatch, caSchema, configs, uploadSessionTag),
           numEventsTotal,
           uploadSessionTag,
-          configs
+          configs,
         );
       }
     }));

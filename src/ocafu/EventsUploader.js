@@ -12,13 +12,15 @@
 import { datasetEndpoint } from './APISettings';
 import type { FeedUploaderConfigs } from './ConfigTypes';
 import { getBatchSigStr, logBatchUploadStart, logBatchUploadEnd } from './UploadSession';
+import { MODE_ROW_NAMES } from './FeedUploaderConstants';
 import { getLogger } from './Logger';
+import { getValidEvents } from './RequestDataBuilder';
 
-const querystring = require('querystring');
 const https = require('https');
 
 export const uploadEventsBatch = (
   events: Array<Object>,
+  postData: string,
   uploadSessionTag: string,
   fileOffset: number,
   configs: FeedUploaderConfigs,
@@ -28,29 +30,31 @@ export const uploadEventsBatch = (
   if (configs.silent !== true) {
     getLogger().info(
       `Posting rows ${getBatchSigStr({offset: fileOffset, size: events.length})} to \
-${datasetEndpoint(configs.dataSetId)}/events`
+${datasetEndpoint(configs.dataSetId, configs.mode)}`
     );
-    _postEvents(events, fileOffset, configs, uploadSessionTag, callback);
+    _postEvents(events, postData, fileOffset, configs, uploadSessionTag, callback);
   } else {
     getLogger().info('Silent Mode');
-    callback(null, fileOffset, events);
+    callback(null, fileOffset, events, configs);
   }
 };
 
 export const batchUploadCallback = (
   err: Error,
   fileOffset: number,
-  events: Array<Object>,
+  events: Array<?Object>,
+  configs: FeedUploaderConfigs,
 ): void => {
+  const rowName = MODE_ROW_NAMES[configs.mode];
   if (err === null) {
     getLogger().info(
       `Rows ${getBatchSigStr({offset: fileOffset, size: events.length})} - ` +
-      `Successfully uploaded ${_getValidEvents(events).length} events.`
+      `Successfully uploaded ${getValidEvents(events).length} ${rowName}.`
     );
   } else {
     getLogger().error(
       `Rows ${getBatchSigStr({offset: fileOffset, size: events.length})} ` +
-      `- Error uploading ${_getValidEvents(events).length} events: ` +
+      `- Error uploading ${getValidEvents(events).length} ${rowName}: ` +
       err.message
     );
   }
@@ -60,28 +64,21 @@ export type batchUploadCallbackType = (
   err: ?Error,
   fileOffset: number,
   events: Array<Object>,
+  configs: FeedUploaderConfigs,
 ) => void;
 
 const _postEvents = (
   events: Array<Object>,
+  postData: string,
   fileOffset: number,
   configs: FeedUploaderConfigs,
   uploadSessionTag: string,
   callback: batchUploadCallbackType,
 ): void => {
-  const validEvents = _removeInvalidEvents(events, fileOffset);
-  const postData = querystring.stringify({
-    'data' : JSON.stringify(validEvents),
-    'access_token': configs.accessToken,
-    'upload_tag': uploadSessionTag,
-  });
-
-  getLogger().silly(`postData: ${postData}`);
-
   const options = {
     hostname: 'graph.facebook.com',
     port: 443,
-    path: `${datasetEndpoint(configs.dataSetId)}/events`,
+    path: datasetEndpoint(configs.dataSetId, configs.mode),
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
@@ -103,13 +100,14 @@ const _postEvents = (
         res.statusCode === 200 ? null : new Error(d),
         fileOffset,
         events,
+        configs,
       );
     });
   });
 
   req.on('error', (err) => {
     getLogger().error(`${fileOffset+1} - ${fileOffset+events.length}: ${err.message}`);
-    callback(null, fileOffset, events);
+    callback(null, fileOffset, events, configs);
   });
 
   req.write(postData);
@@ -119,44 +117,4 @@ const _postEvents = (
     uploadSessionTag,
     {offset: fileOffset, size: events.length}
   );
-};
-
-const _removeInvalidEvents = (
-  events: Array<Object>,
-  fileOffset, number,
-): Array<Object> => {
-  const ommitedRows = _getNullElementOffsets(events, fileOffset).join(',');
-  if (ommitedRows.length > 0) {
-    getLogger().warn(
-      `Omitting invalid rows: ${_getNullElementOffsets(events, fileOffset).join(',')}`
-    );
-  }
-  return _getValidEvents(events);
-};
-
-const _getValidEvents = (
-  events: Array<Object>,
-): Array<Object> => {
-  return events.filter(_isValidEvent);
-};
-
-const _getNullElementOffsets = (
-  events: Array<Object>,
-  fileOffset, number,
-): Array<string> => {
-  return events.reduce(
-    (offsets, event, index) => {
-      if (!_isValidEvent(event)) {
-        offsets.push(`${fileOffset + 1 + index}`);
-      }
-      return offsets;
-    },
-    []
-  );
-};
-
-const _isValidEvent = (
-  event: Object,
-): boolean => {
-  return event !== null;
 };

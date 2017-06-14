@@ -26,6 +26,7 @@ import {
   DEFAULT_COLUMN_MAPPING_FILE,
   DEFAULT_CONFIG_FILE,
   SUPPORTED_MODES,
+  MODE_CA,
 } from './FeedUploaderConstants';
 
 import type { ConfigErrorType } from './ConfigOptions';
@@ -36,6 +37,7 @@ export const buildConfigs = (
   argv: Array<string> = process.argv,
 ): {configs?: FeedUploaderConfigs, err: ?Error} => {
   const commandLineArgs = readConfigsFromCommandLineArgs(argv);
+
   if (!commandLineArgs.mode ||
       !SUPPORTED_MODES.includes(commandLineArgs.mode)) {
     return {err: new Error(ERROR_NO_MODE)};
@@ -67,6 +69,14 @@ export const buildConfigs = (
     fileHasHeader,
     ...commandLineArgs,
   };
+
+  // for ca upload, sanitize the mapping by removing any preceding namespaces
+  if (configs.mode === MODE_CA) {
+    for (const key in colMappingInfo.mapping) {
+      colMappingInfo.mapping[key] =
+        colMappingInfo.mapping[key].split('.').slice(-1)[0];
+    }
+  }
 
   const configErrors = validateConfigOptions(configs);
 

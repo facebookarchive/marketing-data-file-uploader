@@ -16,7 +16,15 @@ export const DEFAULT_DELIMITER_DETECT_SIZE = 20;
 
 export const FILE_DELIMITERS = [',', '\t', ' ', '|', ';'];
 
-export const SUPPORTED_MODES = ['offline-conversions', 'custom-audiences'];
+export const MODE_OC = 'offline-conversions';
+
+export const MODE_CA = 'custom-audiences';
+
+export const SUPPORTED_MODES = [MODE_OC, MODE_CA];
+
+export const MODE_ROW_NAMES = {};
+MODE_ROW_NAMES[MODE_OC] = 'events';
+MODE_ROW_NAMES[MODE_CA] = 'customer profiles';
 
 export const DEFAULT_APP_CONFIGS = {
   batchSize: 500,

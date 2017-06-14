@@ -37,6 +37,7 @@ const CONFIGS_GOOD = {
       },
     },
   },
+  mode: 'offline-conversions',
 };
 
 describe('parseAndNormalizeFeedLine', () => {
@@ -79,8 +80,9 @@ describe('parseAndNormalizeFeedLine', () => {
       {
         colMappingInfo: {
           ...CONFIGS_GOOD.colMappingInfo,
-          infoForNormalization
+          infoForNormalization,
         },
+        mode: 'offline-conversions',
       },
     );
     expect(normlizationResult.normalizedValue.match_keys.dobd).toEqual(
@@ -107,8 +109,9 @@ describe('parseAndNormalizeFeedLine', () => {
       {
         colMappingInfo: {
           ...CONFIGS_GOOD.colMappingInfo,
-          customTypeInfo
+          customTypeInfo,
         },
+        mode: 'offline-conversions',
       },
     );
     expect(normlizationResult.normalizedValue.custom_data.store_id).toEqual(

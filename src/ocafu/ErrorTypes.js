@@ -12,6 +12,9 @@ export const ERROR_NO_MODE =
   'marketing-data-file-uploader offline-conversions ' +
   '--columnMappingFilePath oca_column_mapping.json.example ' +
   '--configFilePath oca_file_uploader.conf.yml.example';
+export const UNSUPPORTED_MODE =
+  'Operation is unsupported in the current mode.' +
+  ' This is likely due to a bug in the tool.';
 export const ERROR_CANNOT_PARSE_CONFIG_FILE =
   'Failed to parse the configuration file';
 export const ERROR_REQUIRED_CONFIG_OPTION_MISSING =

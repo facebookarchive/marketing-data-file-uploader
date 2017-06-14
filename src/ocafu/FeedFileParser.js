@@ -15,10 +15,14 @@ import type { NormalizationResult }
   from '../SignalsSchema/SignalsSchemaValidationTypes';
 import type { FeedUploaderConfigs } from './ConfigTypes';
 
+import { MODE_OC, MODE_CA } from './FeedUploaderConstants';
+import { UNSUPPORTED_MODE } from './ErrorTypes';
+
 const CSV = require('csv-string');
 
 const Normalizers = require('../SignalsSchema/SignalsBaseTypeNormalizers');
-const Schema = require('../SignalsSchema/signalsEventDataSchema');
+const OCSchema = require('../SignalsSchema/SignalsEventDataSchema');
+const CASchema = require('../SignalsSchema/SignalsBasicPIISchema');
 const SignalsUploaderUtils = require('../SignalsSchema/SignalsUploaderUtils');
 const processPIISignalBeforeUpload =
   require('../SignalsSchema/processPIISignalBeforeUpload');
@@ -30,9 +34,10 @@ export const parseAndNormalizeFeedLine = (
   line: string,
   configs: FeedUploaderConfigs,
 ): NormalizationResult => {
+
   return normalizeSignal(
     arrayToObject(parseLine(line, configs.fileDelimiter)),
-    Schema,
+    getSignalsSchema(configs.mode),
     Normalizers,
     Transformers,
     configs.colMappingInfo.mapping,
@@ -46,4 +51,19 @@ const parseLine = (
   delimiter: string,
 ): Array<string> => {
   return CSV.parse(line, delimiter)[0];
+};
+
+const getSignalsSchema = (mode: string): Object => {
+  let Schema = {};
+  switch (mode) {
+    case MODE_OC:
+      Schema = OCSchema;
+      break;
+    case MODE_CA:
+      Schema = CASchema;
+      break;
+    default:
+      throw new Error(UNSUPPORTED_MODE);
+  }
+  return Schema;
 };

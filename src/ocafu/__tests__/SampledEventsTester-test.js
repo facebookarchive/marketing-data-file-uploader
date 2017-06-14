@@ -53,8 +53,9 @@ const COMMON_CONFIGS = {
         key: 'store_num',
         baseType: 'number'
       }
-    }
-  }
+    },
+  },
+  mode: 'offline-conversions',
 };
 
 describe('testSampledEvents', () => {

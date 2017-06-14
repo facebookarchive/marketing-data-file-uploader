@@ -25,6 +25,7 @@ export const buildUploadsQueue = (
 export const scheduleBatchUpload = (
  jobQueue: Object,
  normalizedEventsBatch: Array<?Object>,
+ postData: string,
  numEvents: number,
  uploadSessionTag: string,
  configs: FeedUploaderConfigs,
@@ -32,8 +33,9 @@ export const scheduleBatchUpload = (
   if (normalizedEventsBatch.length > 0) {
     jobQueue.push({
       normalizedEventsBatch: normalizedEventsBatch,
-      numEvents: numEvents,
+      postData: postData,
       uploadSessionTag: uploadSessionTag,
+      numEvents: numEvents,
       configs: configs,
     },
     uploadSessionTag,
@@ -48,6 +50,7 @@ const uploadBatch = (
 ): void => {
   uploadEventsBatch(
     data.normalizedEventsBatch,
+    data.postData,
     data.uploadSessionTag,
     _getBatchOffset(data.numEvents, data.normalizedEventsBatch.length),
     data.configs,
@@ -64,7 +67,8 @@ const _getBatchOffset = (
 
 type NormalizedBatchData = {
   normalizedEventsBatch: Array<Object>;
-  numEvents: number;
+  postData: string;
   uploadSessionTag: string;
+  numEvents: number;
   configs: FeedUploaderConfigs;
 }
