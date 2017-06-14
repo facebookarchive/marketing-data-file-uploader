@@ -1,10 +1,14 @@
 {
   "plugins": [
-    "transform-strict-mode"
+    "transform-strict-mode",
+    "remove-comments",
+    ["add-header-comment", {
+      "header": [" Copyright (c) 2017-present, Facebook, Inc.\n All rights reserved.\n \n This source code is licensed under the BSD-style license found in the\n LICENSE file in the root directory of this source tree. An additional grant\n of patent rights can be found in the PATENTS file in the same directory.\n \n @generated"]
+    }]
   ],
   "presets": [
     "es2015",
     "react",
     "stage-0",
-  ]
+  ],
 }

@@ -54,6 +54,8 @@
   },
   "dependencies": {
     "async": "2.1.5",
+    "babel-plugin-add-header-comment": "^1.0.3",
+    "babel-plugin-remove-comments": "^2.0.0",
     "commander": "2.9.0",
     "csv-string": "2.3.2",
     "event-stream": "3.3.4",
