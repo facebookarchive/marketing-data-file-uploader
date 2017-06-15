@@ -8,23 +8,28 @@
  *
  * @flow
  */
-export const DEFAULT_COLUMN_MAPPING_FILE = 'oca_column_mapping.json';
-
-export const DEFAULT_CONFIG_FILE = 'oca_file_uploader.conf.yml';
 
 export const DEFAULT_DELIMITER_DETECT_SIZE = 20;
 
 export const FILE_DELIMITERS = [',', '\t', ' ', '|', ';'];
 
 export const MODE_OC = 'offline-conversions';
-
 export const MODE_CA = 'custom-audiences';
+export const MODE_VER = 'version';
 
-export const SUPPORTED_MODES = [MODE_OC, MODE_CA];
+export const SUPPORTED_MODES = [MODE_OC, MODE_CA, MODE_VER];
 
 export const MODE_ROW_NAMES = {};
 MODE_ROW_NAMES[MODE_OC] = 'events';
 MODE_ROW_NAMES[MODE_CA] = 'customer profiles';
+
+export const DEFAULT_COLUMN_MAPPING_FILE = {};
+DEFAULT_COLUMN_MAPPING_FILE[MODE_OC] = 'oca_column_mapping.json';
+DEFAULT_COLUMN_MAPPING_FILE[MODE_CA] = 'ca_column_mapping.json';
+
+export const DEFAULT_CONFIG_FILE = {};
+DEFAULT_CONFIG_FILE[MODE_OC] = 'oca_file_uploader.conf.yml';
+DEFAULT_CONFIG_FILE[MODE_CA] = 'ca_file_uploader.conf.yml';
 
 export const DEFAULT_APP_CONFIGS = {
   batchSize: 500,

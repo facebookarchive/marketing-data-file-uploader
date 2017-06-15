@@ -12,9 +12,14 @@
 import { datasetEndpoint } from './APISettings';
 import type { FeedUploaderConfigs } from './ConfigTypes';
 import { getBatchSigStr, logBatchUploadStart, logBatchUploadEnd } from './UploadSession';
-import { MODE_ROW_NAMES } from './FeedUploaderConstants';
+import {
+  MODE_ROW_NAMES,
+  MODE_CA,
+  MODE_OC,
+} from './FeedUploaderConstants';
 import { getLogger } from './Logger';
 import { getValidEvents } from './RequestDataBuilder';
+import { UNSUPPORTED_MODE } from './ErrorTypes';
 
 const https = require('https');
 
@@ -67,6 +72,17 @@ export type batchUploadCallbackType = (
   configs: FeedUploaderConfigs,
 ) => void;
 
+const _getAPIEndpoint = (configs: FeedUploaderConfigs): string => {
+  switch (configs.mode) {
+    case MODE_OC:
+      return datasetEndpoint(configs.dataSetId, configs.mode);
+    case MODE_CA:
+      return datasetEndpoint(configs.customAudienceId, configs.mode);
+    default:
+      throw new Error(UNSUPPORTED_MODE);
+  }
+}
+
 const _postEvents = (
   events: Array<Object>,
   postData: string,
@@ -75,10 +91,11 @@ const _postEvents = (
   uploadSessionTag: string,
   callback: batchUploadCallbackType,
 ): void => {
+
   const options = {
     hostname: 'graph.facebook.com',
     port: 443,
-    path: datasetEndpoint(configs.dataSetId, configs.mode),
+    path: _getAPIEndpoint(configs),
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',

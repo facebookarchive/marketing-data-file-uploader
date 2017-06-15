@@ -26,6 +26,7 @@ export type FeedUploaderConfigs = {
   columnMappingFilePath?: string,
   configFilePath?: string,
   dataSetId: string;
+  customAudienceId: string;
   fileDelimiter: string;
   fileHasHeader?: ?boolean;
   inputFilePath: string;
@@ -43,6 +44,7 @@ export type UserSuppliedConfigs = {
   columnMappingFilePath?: string;
   configFilePath?: string;
   dataSetId?: string;
+  customAudienceId?: string;
   fileDelimiter?: string;
   inputFilePath?: string;
   testOnly?: boolean;

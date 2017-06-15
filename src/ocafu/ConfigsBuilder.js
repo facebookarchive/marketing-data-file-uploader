@@ -27,6 +27,7 @@ import {
   DEFAULT_CONFIG_FILE,
   SUPPORTED_MODES,
   MODE_CA,
+  MODE_VER,
 } from './FeedUploaderConstants';
 
 import type { ConfigErrorType } from './ConfigOptions';
@@ -43,6 +44,9 @@ export const buildConfigs = (
     return {err: new Error(ERROR_NO_MODE)};
   }
 
+  const defaultMappingFile = DEFAULT_COLUMN_MAPPING_FILE[commandLineArgs.mode];
+  const defaultConfigFile = DEFAULT_CONFIG_FILE[commandLineArgs.mode];
+
   const {
     colMappingInfo,
     fileHasHeader,
@@ -51,7 +55,7 @@ export const buildConfigs = (
   } = readColMappingFromFile(
     configFileFullPath(
       commandLineArgs.columnMappingFilePath,
-      DEFAULT_COLUMN_MAPPING_FILE,
+      defaultMappingFile,
     )
   );
 
@@ -62,7 +66,10 @@ export const buildConfigs = (
   const configs = {
     ...DEFAULT_APP_CONFIGS,
     ...readConfigsFromFile(
-      configFileFullPath(commandLineArgs.configFilePath, DEFAULT_CONFIG_FILE)
+      configFileFullPath(
+        commandLineArgs.configFilePath,
+        defaultConfigFile,
+      ),
     ),
     colMappingInfo,  // Settings read from the mapping file
     fileDelimiter,
@@ -115,6 +122,7 @@ const validateConfigOptions = (
     // If value exists in configs read, check if valid
     if (configOption.field in configs) {
       if ('validator' in configOption
+        && !configOption.skip.includes(configs.mode)
         && configOption.validator instanceof Function
         && !configOption.validator(configs[configOption.field])) {
         errors.push({
@@ -123,7 +131,7 @@ const validateConfigOptions = (
         });
       }
     } else {
-      if (!configOption.optional) {
+      if (!configOption.optional.includes(configs.mode)) {
         errors.push({
           field: configOption.field,
           message: ERROR_REQUIRED_CONFIG_OPTION_MISSING,

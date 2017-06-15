@@ -13,7 +13,14 @@
  import { getLogger, initializeLogger } from './Logger';
  import { parseAndNormalizeFeedFile } from './FeedFileHandler';
  import { testSampledEvents } from './SampledEventsTester';
- import { MODE_ROW_NAMES } from './FeedUploaderConstants';
+ import {
+   MODE_ROW_NAMES,
+   MODE_CA,
+   MODE_OC,
+   MODE_VER,
+ } from './FeedUploaderConstants';
+ import { version } from '../../package.json';
+ import { UNSUPPORTED_MODE } from './ErrorTypes';
 
  const winston = require('winston');
 
@@ -27,19 +34,31 @@
      process.exit();
    }
    if (configs) {
-     winston.level = configs.logging;
-     initializeLogger();
-     testSampledEvents(configs, (err: ?Error) => {
-       const rowName = MODE_ROW_NAMES[configs.mode];
-       if (err) {
-         getLogger().error(err.message);
-       } else if (configs.testOnly) {
-         getLogger().info(`Sampled ${rowName} set passed the test.`);
-       } else {
-         getLogger().info(`Sampled ${rowName} look ok.`);
-         getLogger().info(`STEP 2. Uploading the ${rowName}`);
-         parseAndNormalizeFeedFile(configs);
-       }
-     });
+     switch (configs.mode) {
+       case MODE_CA:
+       case MODE_OC:
+        {
+           winston.level = configs.logging;
+           initializeLogger();
+           testSampledEvents(configs, (err: ?Error) => {
+             const rowName = MODE_ROW_NAMES[configs.mode];
+             if (err) {
+               getLogger().error(err.message);
+             } else if (configs.testOnly) {
+               getLogger().info(`Sampled ${rowName} set passed the test.`);
+             } else {
+               getLogger().info(`Sampled ${rowName} look ok.`);
+               getLogger().info(`STEP 2. Uploading the ${rowName}`);
+               parseAndNormalizeFeedFile(configs);
+             }
+           });
+        }
+        break;
+      case MODE_VER:
+        console.log(`v${version}`);
+        break;
+      default:
+        throw new Error(UNSUPPORTED_MODE);
+     }
    }
  };
