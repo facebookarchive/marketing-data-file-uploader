@@ -24,9 +24,9 @@
 
  const winston = require('winston');
 
- winston.level = process.env.OCAFU_LOG_LEVEL || 'info';
+ winston.level = process.env.MDFU_LOG_LEVEL || 'info';
 
- export const uploadConversionsFeed = (): void => {
+ export const upload = (): void => {
    const {configs, err} = buildConfigs();
    if (err) {
      winston.level = 'error';
