@@ -8,4 +8,6 @@ tmp
 logs
 oca_file_uploader.conf.yml
 oca_column_mapping.json
+ca_column_mapping.json
+ca_file_uploader.conf.yml
 .arcconfig
