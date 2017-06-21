@@ -11,7 +11,7 @@
     "build-exe": "npm run clear-all && npm run compile && npm run build-binary-exe",
     "clear-all": "node_modules/.bin/del build lib",
     "compile": "./node_modules/.bin/babel src --out-dir lib",
-    "example": "npm run babel-node src/ocafu/runner.js -- --inputFilePath src/ocafu/__tests__/example_events_file.csv",
+    "example": "npm run babel-node src/mdfu/runner.js -- --inputFilePath src/mdfu/__tests__/example_events_file.csv",
     "jest": "./node_modules/.bin/jest",
     "lint": "./node_modules/.bin/eslint -- src/** && ./node_modules/.bin/flow",
     "test": "npm run jest -- --config .jestconfig --verbose"

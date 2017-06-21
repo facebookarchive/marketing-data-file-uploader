@@ -32,8 +32,8 @@
  };
 
  export const getLogger = (): winston.Logger => {
-   if (!global.ocafuLogger) {
-     global.ocafuLogger = initializeLogger();
+   if (!global.mdfuLogger) {
+     global.mdfuLogger = initializeLogger();
    }
-   return global.ocafuLogger;
+   return global.mdfuLogger;
  };

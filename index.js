@@ -1,5 +1,5 @@
-const ocafu = require('./lib/ocafu/OfflineConversionsFeedUploader');
+const mdfu = require('./lib/mdfu/MarketingDataFileUploader');
 
-exports.uploadConversionsFeed = function() {
-  ocafu.uploadConversionsFeed();
+exports.upload = function() {
+  mdfu.upload();
 };

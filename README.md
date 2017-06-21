@@ -1,5 +1,5 @@
 # FB Marketing Data File Uploader
-FB Marketing Data File Uploader (referred as 'MDFU' hereinafter) is a command line tool and node.js module that helps Facebook advertisers and marketing partners upload offline transactions to the FB marketing API without building their own application for API integration.
+FB Marketing Data File Uploader (referred as 'MDFU' hereinafter) is a command line tool and node.js module that helps Facebook advertisers and marketing partners upload offline transactions and customer lists to the FB marketing API without building their own application for API integration.
 
 ## Why use MDFU?
 * Building API integration will require engineering resources and takes many development hours.   Typically one engineer will need to spend about 3 weeks for development and testing to build reliable integration.
@@ -10,11 +10,18 @@ FB Marketing Data File Uploader (referred as 'MDFU' hereinafter) is a command li
 ## Requirements
 FB Marketing Data File Uploader requires or works with
 * Mac OS X, Linux, or Windows
+* FB App used for API calls.  See [this guide](https://developers.facebook.com/docs/apps/register) for instructions.
+* FB system user token that has access to the offline event set or custom audience to upload data to.  For creating system user and token, see instructions [here](https://www.facebook.com/business/help/755714304604753?helpref=search&sr=2&query=system%20user).  (Regular user access token can be used, but using system user token is highly recommended)
+
+To upload offline conversions, you will also need
 * Offline conversions data in CSV format.  Download Example [Here](http://facebook.com/images/ads/signals/example_files/example_events_file.csv)
 * User configured settings file.  See example [here](https://github.com/facebookincubator/marketing-data-file-uploader/blob/master/oca_file_uploader.conf.yml.example)
 * User configured column mapping file.  See example [here](https://github.com/facebookincubator/marketing-data-file-uploader/blob/master/oca_column_mapping.json.example)
-* FB App used for API calls.  See [this guide](https://developers.facebook.com/docs/apps/register) for instructions.
-* FB system user token that has access to the offline event set used for the upload.  For creating system user and token, see instructions [here](https://www.facebook.com/business/help/755714304604753?helpref=search&sr=2&query=system%20user).  (Regular user access token can be used, but using system user token is highly recommended)
+
+To upload customer lists, you will instead need
+* customer PII data in CSV format. Download Example [Here](http://facebook.com/images/ads/signals/example_files/example_audience_file.csv)
+* User configured settings file.  See example [here](https://github.com/facebookincubator/marketing-data-file-uploader/blob/master/ca_file_uploader.conf.yml.example)
+* User configured column mapping file.  See example [here](https://github.com/facebookincubator/marketing-data-file-uploader/blob/master/ca_column_mapping.json.example)
 
 ## Installing FB Marketing Data File Uploader
 MDFU can be used in 3 different ways based on your environment and need:
@@ -25,7 +32,7 @@ MDFU can be used in 3 different ways based on your environment and need:
 
 ```
 $ npm install -g marketing-data-file-uploader
-$ marketing-data-file-uploader --accessToken YOUR_ACCESS_TOKEN... --uploadTagPrefix "Offline Sales xx/xx/xxxx"...
+$ marketing-data-file-uploader offline-conversions --accessToken YOUR_ACCESS_TOKEN... --uploadTagPrefix "Offline Sales xx/xx/xxxx"...
 
 2017-05-15T15:52:52.265Z INFO Posting events 1 - 500 to http://graph.facebook.com/v2.9/00000000000000/events
 2017-05-15T15:52:55.176Z INFO Rows 1 - 500 - Successfully uploaded 10 events.
@@ -38,9 +45,9 @@ $ npm install marketing-data-file-uploader --save
 
 (In your app's .js file)
 const MDFU = require('marketing-data-file-uploader');
-MDFU.uploadConversionsFeed();
+MDFU.upload();
 
-$ node your_app.js --accessToken YOUR_ACCESS_TOKEN... --uploadTagPrefix "Offline Sales xx/xx/xxxx"...
+$ node your_app.js offline-conversions --accessToken YOUR_ACCESS_TOKEN... --uploadTagPrefix "Offline Sales xx/xx/xxxx"...
 
 2017-05-15T15:52:52.265Z INFO Posting events 1 - 500 to http://graph.facebook.com/v2.9/00000000000000/events
 2017-05-15T15:52:55.176Z INFO Rows 1 - 500 - Successfully uploaded 10 events.
@@ -54,7 +61,7 @@ $ git clone https://github.com/facebookincubator/marketing-data-file-uploader
 
 $ npm install
 $ npm run build-binary (or build-binary-exe for Windows)
-$./build/marketing-data-file-uploader --accessToken YOUR_ACCESS_TOKEN... --uploadTagPrefix "Offline Sales xx/xx/xxxx"...
+$./build/marketing-data-file-uploader offline-conversions --accessToken YOUR_ACCESS_TOKEN... --uploadTagPrefix "Offline Sales xx/xx/xxxx"...
 
 2017-05-15T15:52:52.265Z INFO Posting events 1 - 500 to http://graph.facebook.com/v2.9/00000000000000/events
 2017-05-15T15:52:55.176Z INFO Rows 1 - 500 - Successfully uploaded 10 events.
@@ -64,19 +71,35 @@ $./build/marketing-data-file-uploader --accessToken YOUR_ACCESS_TOKEN... --uploa
 ## How MDFU works
 
 This is a node.js application that will go through following steps to upload your offline conversions to FB's marketing API.
-1. Read configurations and column mappings
-2. Read input file in stream
-3. For each line read, columns are normalized and hashed for upload.
-4. Collect normalized and hashed data into batches (per batch size configured.  Default: 500)
-5. POST each batch to the API endpoint
-6. *How the binary is built*: Binary file containing node runtime is built using an open source utility called [nexe](https://github.com/nexe/nexe).
+1. Read command which specifies whether to upload offline events or customer lists
+2. Read configurations and column mappings
+3. Read input file in stream
+4. For each line read, columns are normalized and hashed for upload.
+5. Collect normalized and hashed data into batches (per batch size configured.  Default: 500)
+6. POST each batch to the API endpoint
+7. *How the binary is built*: Binary file containing node runtime is built using an open source utility called [nexe](https://github.com/nexe/nexe).
 
 ## How to use MDFU
 
 1. Install per instruction above.
 2. Set up tool configuration file and column mapping file
 3. Get access token for API calls
-4. Run on command line or schedule execution with tools such as crontab
+4. Create an Offline Event Set or Custom Audience under your ad account, and obtain the ID
+5. Run on command line or schedule execution with tools such as `crontab`
+
+### Available Commands
+
+You need to supply one of the following commands to the tool to specify action.
+* `offline-conversions`: Upload offline conversion event data
+* `custom-audiences`: Upload customer PII data
+* `version`: Print the version of the tool
+
+For example:
+```
+$ marketing-data-file-uploader offline-conversions [configs...]
+$ marketing-data-file-uploader custom-audiences [configs...]
+$ marketing-data-file-uploader version
+```
 
 ### Available Configuration options
 
@@ -85,23 +108,22 @@ Configuration options can either be stored in a file (.yml format) or passed in 
 |Option       |Description        | default |
 |-------------|-------------------|---------|
 |accessToken*  |  Access token for API call |  |
-|columnMappingFilePath| File containing column mapping info. For more info see **Column Mapping File** section below.|oca_column_mapping.json in current directory|
-|configFilePath*| File containing offline conversions data|   oca_file_uploader.conf.yml in current directory.  For more info about config options see **Available Configuration options** section below.|
+|columnMappingFilePath| File containing column mapping info. For more info see **Column Mapping File** section below.|`oca_column_mapping.json` (if command is `offline-conversions`) or `ca_column_mapping.json` (if command is `custom-audiences`) in current directory|
+|configFilePath*| File containing configurations| `oca_file_uploader.conf.yml` (if command is `offline-conversions`) or `ca_file_uploader.conf.yml` (if command is `custom-audiences`) in current directory.  |
 |dataSetId| ID of your offline event data set| |
+|customAudienceId| ID of your custom audience| |
 |inputFilePath| File containing offline conversions data | |
-|logging| Control the logging level of program (available options: silly, debug, info, warn, error)| info |
+|logging| Control the logging level of program (available options: `silly`, `debug`, `info`, `warn`, `error`)| `info` |
 |uploadTag| Tag to identify the events uploaded.  Should use unique string for each distinct file uploaded. | Offline Conversions |
 |uploadTagPrefix| Instead of providing uploadTag, you can also define prefix (ex: Offline Conversions), then the tool will append filename/timestamp and use it as the uploadTag. If uploadTag is set, uploadTagPrefix is ignored.  ex) *Offline Conversions (example_events_big_100k.csv@1493837377000)* |  |
 
-* These options can only be passed in as command line arguments and cannot be set in configuration file.
+\* These options can only be passed in as command line arguments and cannot be set in configuration file.
 
-See example file here:  [here](https://github.com/facebookincubator/marketing-data-file-uploader/blob/master/oca_file_uploader.conf.yml.example)
+See [an example file](https://github.com/facebookincubator/marketing-data-file-uploader/blob/master/oca_file_uploader.conf.yml.example) for configuration for uploading offline conversions, and [another](https://github.com/facebookincubator/marketing-data-file-uploader/blob/master/ca_file_uploader.conf.yml.example) for uploading custom audience.
 
 ### Column Mapping File
 
-You need to define what each column in the file is for.  See an example [here](https://github.com/facebookincubator/marketing-data-file-uploader/blob/master/oca_column_mapping.json.example)
-
-and description of each key in the JSON file below:
+For each file you upload you need to provide a corresponding column mapping file which defines what each column in the file is for.  See an [example](https://github.com/facebookincubator/marketing-data-file-uploader/blob/master/oca_column_mapping.json.example) for the column mapping for an offline conversion file, and [another](https://github.com/facebookincubator/marketing-data-file-uploader/blob/master/oca_column_mapping.json.example) for the mapping for a customer PII file. The description of each key in the JSON file is below:
 
 | Field | Description | Required? |
 |-------|-------------|-----------|
@@ -113,30 +135,31 @@ and description of each key in the JSON file below:
 
 #### Column Types
 
-|Column Type| Required? | Description |
-|-----------|-----------|-------------|
-|event_time | Yes | Use ISO8601 format or unixtime timestamp |
-|event_name | Yes | See event_time row in the [data parameters table](https://developers.intern.facebook.com/docs/marketing-api/offline-conversions/#data-parameters)|
-|currency   | Yes | Three-letter ISO currency for this conversion event. Required for Purchase events. |
-| value | Yes | Value of conversion event. Required for Purchase event. ex) 16.00 |
-| match_keys.xxxxx | Yes | The identifier info used to match people.  xxxxx needs to be replaced with the match key type such as email, phone, etc... For list of available match key types, please see 'Key name' column in [this table](https://developers.intern.facebook.com/docs/marketing-api/offline-conversions#match-keys)|
-| custom_data.xxxxx | No | Additional information about the conversion event.  For example, send store location ID as custom_data.location_id or product category as custom_data.category |
+|Column Type| Required by `offline-conversions`? | Required by `custome-audiences` | Description |
+|-----------|-----------|-------------|-------------|
+|event_time | Yes | No | Use ISO8601 format or unixtime timestamp |
+|event_name | Yes | No | See event_time row in the [data parameters table](https://developers.intern.facebook.com/docs/marketing-api/offline-conversions/#data-parameters)|
+|currency   | Yes | No | Three-letter ISO currency for this conversion event. Required for Purchase events. |
+| value | Yes | No | Value of conversion event. Required for Purchase event. ex) 16.00 |
+| match_keys.xxxxx | Yes | Yes | The identifier info used to match people.  xxxxx needs to be replaced with the match key type such as email, phone, etc... For list of available match key types, please see 'Key name' column in [this table](https://developers.intern.facebook.com/docs/marketing-api/offline-conversions#match-keys)|
+| custom_data.xxxxx | No | No | Additional information about the conversion event.  For example, send store location ID as custom_data.location_id or product category as custom_data.category |
 
 #### infoForNormalization
 
 For **dob** choose one of following format:
 
-- MM/DD/YYYY
-- DD/MM/YYYY
-- YYYY/MM/DD
-- MM/DD/YY
-- DD/MM/YY
-- YY/MM/DD
+- `MM/DD/YYYY`
+- `DD/MM/YYYY`
+- `YYYY/MM/DD`
+- `MM/DD/YY`
+- `DD/MM/YY`
+- `YY/MM/DD`
 
-Note: '/' can be skipped (MMDDYYYY) or replaced with '-' (MM-DD-YYYY)
+Note: '/' can be skipped (`MMDDYYYY`) or replaced with '-' (`MM-DD-YYYY`)
 
 #### customTypeInfo
 
+*Applies to offline conversion uploading only*.
 For each custom data column, add following JSON object to customTypeInfo.
 
 If you added custom_data.store_num as one of the mapped columns in "mapping", you should add following:

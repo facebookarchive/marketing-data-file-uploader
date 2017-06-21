@@ -1,4 +1,4 @@
 #!/usr/bin/env node
 
-const ocafu = require('./lib/ocafu/OfflineConversionsFeedUploader');
-ocafu.uploadConversionsFeed();
+const mdfu = require('./lib/mdfu/MarketingDataFileUploader');
+mdfu.upload();

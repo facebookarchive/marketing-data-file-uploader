@@ -11,6 +11,6 @@
 
 // runner script for quick test with node
 
-import { uploadConversionsFeed } from './OfflineConversionsFeedUploader';
+import { upload } from './MarketingDataFileUploader';
 
-uploadConversionsFeed();
+upload();
