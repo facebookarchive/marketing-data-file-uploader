@@ -38,14 +38,24 @@ The input for upload is the CSV file with either offline transactions or custome
 
 ### 1. Set up upload destinations
 
-- **Offline Conversions**: Create offline event in the business manager.  Please see [this guide](https://www.facebook.com/business/help/339320669734609?helpref=search&sr=1&query=create%20offline%20event%20set) for instructions
-- **Custom Audience**: Create custom audience in ads manager.  Please see [this guide](https://www.facebook.com/business/help/170456843145568?helpref=search&sr=13&query=create%20custom%20audience) for instructions.  (**Note:** Currently, this tool only supports adding profiles to an existing custom audience.  Support for new audience creation is coming soon)
+- **Offline Conversions**: Create offline event in the business manager and have the offline event set id ready. Please see [this guide](https://www.facebook.com/business/help/339320669734609?helpref=search&sr=1&query=create%20offline%20event%20set) for instructions
+- **Custom Audience**:
+  - Create custom audience in ads manager and have the audience id ready.  Please see [this guide](https://www.facebook.com/business/help/170456843145568?helpref=search&sr=13&query=create%20custom%20audience) for instructions.
+  - Alternatively, if not given an audience id, we will create a new custom audience with each customer file you upload. The file name will be used as the audience name. You will need to provide your ad account id in this case.
 
 ### 2. Install MDFU
 
-MDFU can be installed in 3 different ways based on your environment and need:
+MDFU comes both as a pre-built binary and as a node.js program. If your organization does not support node.js, please see answer to question #2 in FAQ section below to learn how to obtain pre-built binary from Facebook. You can then **run the pre-built binary** from the command line or a script:
 
-(*Note*: If your organization does not support node.js, please see answer to question #2 in FAQ section below to learn how to obtain pre-built binary from Facebook)
+```
+$ marketing-data-file-uploader offline-conversions --accessToken YOUR_ACCESS_TOKEN... --uploadTagPrefix "Offline Sales xx/xx/xxxx"...
+
+(Standard output)
+2017-05-15T15:52:52.265Z INFO Posting events 1 - 500 to http://graph.facebook.com/v2.9/00000000000000/events
+...
+```
+
+For the node.js program, you have three options depending on your environment and need:
 
 Option 1: **Run as node.js script** - Install globally and use as command line tool
 
@@ -123,8 +133,9 @@ Configuration options can either be stored in a file (.yml format) or passed in 
 |accessToken*  |  Access token for API call |  |
 |columnMappingFilePath| File containing column mapping info. For more info see **Column Mapping File** section below.|`oca_column_mapping.json` (if command is `offline-conversions`) or `ca_column_mapping.json` (if command is `custom-audiences`) in current directory|
 |configFilePath*| File containing configurations| `oca_file_uploader.conf.yml` (if command is `offline-conversions`) or `ca_file_uploader.conf.yml` (if command is `custom-audiences`) in current directory.  |
-|dataSetId| ID of your offline event data set| |
-|customAudienceId| ID of your custom audience| |
+|dataSetId| ID of your offline event data set if you are uploading offline conversions| |
+|customAudienceId| ID of your custom audience if you are uploading to an existing audience| |
+|adAccountId| ID of your ad account if you are creating a new audience with this upload| |
 |inputFilePath| File containing offline conversions data | |
 |logging| Control the logging level of program (available options: `silly`, `debug`, `info`, `warn`, `error`)| `info` |
 |uploadTag| Tag to identify the events uploaded.  Should use unique string for each distinct file uploaded. | Offline Conversions |
@@ -223,6 +234,11 @@ This will add customer profiles from /data/email_list_for_brand_XYZ_201707.csv f
 
 ```
 marketing-data-file-uploader custom-audiences --accessToken XXXXAAAA... --inputFilePath /data/email_list_for_brand_XYZ_201707.csv --customAudienceId 12345
+```
+
+This will create a new audience under the ad account 98765, and add customer profiles from /data/email_list_for_brand_XYZ_201707.csv file to the newly created audience (using ca_file_uploader.conf.yml and ca_column_mapping.json in the current directory). The file name will be used as the audience name
+```
+marketing-data-file-uploader custom-audiences --accessToken XXXXAAAA... --inputFilePath /data/email_list_for_brand_XYZ_201707.csv --adAccountId 98765
 ```
 
 **Scheduling MDFU**
