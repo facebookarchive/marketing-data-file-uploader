@@ -15,19 +15,34 @@ import {
   MODE_CA,
   MODE_OC,
 } from './FeedUploaderConstants';
+import { UNSUPPORTED_MODE } from './ErrorTypes';
+
+import type { FeedUploaderConfigs } from './ConfigTypes';
 
 export const datasetEndpoint = (
-  dataSetId: string,
-  mode: string,
+  configs: FeedUploaderConfigs,
 ): string => {
-  let edge = 'events';
-  switch (mode) {
+  let id, edge;
+  switch (configs.mode) {
     case MODE_CA:
+      id = configs.customAudienceId;
       edge = 'users';
       break;
     case MODE_OC:
+      id = configs.dataSetId;
+      edge = 'events';
     default:
-      break;
+      throw new Error(UNSUPPORTED_MODE);
   }
-  return `${GRAPH_API_BASE_URL}/v${MARKETING_API_VER}/${dataSetId}/${edge}`;
+  return `${GRAPH_API_BASE_URL}/v${MARKETING_API_VER}/${id}/${edge}`;
 };
+
+export const createCAEndpoint = (
+  adAccountId: string,
+): string => {
+  // make sure ad account id has the 'act_' prefix
+  if (!adAccountId.match(/act_\d+/)) {
+    adAccountId = 'act_' + adAccountId;
+  }
+  return `${GRAPH_API_BASE_URL}/v${MARKETING_API_VER}/${adAccountId}/customaudiences`;
+}

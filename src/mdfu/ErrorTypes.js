@@ -29,3 +29,6 @@ export const ERROR_SAMPLE_MATCH_RATE_TOO_LOW =
   'For additional information, please visit http://someurl.com';
 export const ERROR_SAMPLE_NORMALIZATION_ERRORS =
   'Too many issues found in the sampled set of events';
+export const ERROR_NO_CA_ID_OR_ACT_ID =
+  'To upload a custom audience, either a custom audience id (for updating) ' +
+  'or an ad account id (for creating) is required'; 

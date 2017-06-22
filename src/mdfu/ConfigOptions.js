@@ -57,7 +57,16 @@ export const CONFIG_OPTIONS: Array<ConfigOption> = [
       return typeof(customAudienceId) === 'string' ? customAudienceId.match(/^\d+$/) : true;
     },
     description: 'ID of your custom audience',
-    optional: [ MODE_VER, MODE_OC ],
+    optional: [ MODE_VER, MODE_OC, MODE_CA ],
+    skip: [ MODE_VER, MODE_OC ],
+  },
+  {
+    field: 'adAccountId',
+    validator: (adAccountId: string | number) => {
+      return typeof(adAccountId) === 'string' ? adAccountId.match(/^\d+$/) : true;
+    },
+    description: 'ID of the ad account for which to create new custom audience',
+    optional: [ MODE_VER, MODE_OC, MODE_CA ],
     skip: [ MODE_VER, MODE_OC ],
   },
   {

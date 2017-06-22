@@ -21,6 +21,9 @@
  } from './FeedUploaderConstants';
  import { version } from '../../package.json';
  import { UNSUPPORTED_MODE } from './ErrorTypes';
+ import { createCustomAudience } from './EventsUploader';
+
+ import type { uploadCallback } from './EventsUploader';
 
  const winston = require('winston');
 
@@ -46,10 +49,10 @@
                getLogger().error(err.message);
              } else if (configs.testOnly) {
                getLogger().info(`Sampled ${rowName} set passed the test.`);
+             } else if (configs.mode === MODE_CA && !configs.customAudienceId) {
+               createCustomAudience(configs, _uploadCallback);
              } else {
-               getLogger().info(`Sampled ${rowName} look ok.`);
-               getLogger().info(`STEP 2. Uploading the ${rowName}`);
-               parseAndNormalizeFeedFile(configs);
+               _uploadCallback(configs);
              }
            });
         }
@@ -61,4 +64,11 @@
         throw new Error(UNSUPPORTED_MODE);
      }
    }
+ };
+
+ const _uploadCallback: uploadCallback = (configs) => {
+   const rowName = MODE_ROW_NAMES[configs.mode];
+   getLogger().info(`Sampled ${rowName} look ok.`);
+   getLogger().info(`STEP 2. Uploading the ${rowName}`);
+   parseAndNormalizeFeedFile(configs);
  };

@@ -27,6 +27,7 @@ export type FeedUploaderConfigs = {
   configFilePath?: string,
   dataSetId: string;
   customAudienceId: string;
+  adAccountId: string;
   fileDelimiter: string;
   fileHasHeader?: ?boolean;
   inputFilePath: string;
@@ -45,6 +46,7 @@ export type UserSuppliedConfigs = {
   configFilePath?: string;
   dataSetId?: string;
   customAudienceId?: string;
+  adAccountId?: string;
   fileDelimiter?: string;
   inputFilePath?: string;
   testOnly?: boolean;

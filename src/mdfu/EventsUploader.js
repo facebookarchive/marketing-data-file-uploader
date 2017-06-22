@@ -9,7 +9,10 @@
  * @flow
  */
 
-import { datasetEndpoint } from './APISettings';
+import {
+  datasetEndpoint,
+  createCAEndpoint,
+} from './APISettings';
 import type { FeedUploaderConfigs } from './ConfigTypes';
 import { getBatchSigStr, logBatchUploadStart, logBatchUploadEnd } from './UploadSession';
 import {
@@ -19,9 +22,13 @@ import {
 } from './FeedUploaderConstants';
 import { getLogger } from './Logger';
 import { getValidEvents } from './RequestDataBuilder';
-import { UNSUPPORTED_MODE } from './ErrorTypes';
+import {
+  UNSUPPORTED_MODE,
+  ERROR_NO_CA_ID_OR_ACT_ID,
+} from './ErrorTypes';
 
 const https = require('https');
+const querystring = require('querystring');
 
 export const uploadEventsBatch = (
   events: Array<Object>,
@@ -35,7 +42,7 @@ export const uploadEventsBatch = (
   if (configs.silent !== true) {
     getLogger().info(
       `Posting rows ${getBatchSigStr({offset: fileOffset, size: events.length})} to \
-${datasetEndpoint(configs.dataSetId, configs.mode)}`
+${datasetEndpoint(configs)}`
     );
     _postEvents(events, postData, fileOffset, configs, uploadSessionTag, callback);
   } else {
@@ -72,17 +79,6 @@ export type batchUploadCallbackType = (
   configs: FeedUploaderConfigs,
 ) => void;
 
-const _getAPIEndpoint = (configs: FeedUploaderConfigs): string => {
-  switch (configs.mode) {
-    case MODE_OC:
-      return datasetEndpoint(configs.dataSetId, configs.mode);
-    case MODE_CA:
-      return datasetEndpoint(configs.customAudienceId, configs.mode);
-    default:
-      throw new Error(UNSUPPORTED_MODE);
-  }
-}
-
 const _postEvents = (
   events: Array<Object>,
   postData: string,
@@ -95,12 +91,12 @@ const _postEvents = (
   const options = {
     hostname: 'graph.facebook.com',
     port: 443,
-    path: _getAPIEndpoint(configs),
+    path: datasetEndpoint(configs),
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
-      'Content-Length': Buffer.byteLength(postData)
-    }
+      'Content-Length': Buffer.byteLength(postData),
+    },
   };
 
   const req = https.request(options, (res) => {
@@ -135,3 +131,102 @@ const _postEvents = (
     {offset: fileOffset, size: events.length}
   );
 };
+
+export type uploadCallback = (
+  configs: FeedUploaderConfigs,
+) => void;
+
+export const createCustomAudience = (
+  configs: FeedUploaderConfigs,
+  callback: uploadCallback,
+): void => {
+  // sanity check
+  if (configs.mode !== MODE_CA) {
+    callback(configs);
+    return;
+  }
+
+  if (configs.customAudienceId) {
+    callback(configs); // already has the id... just proceed
+    return;
+  }
+
+  if (!configs.adAccountId) {
+    getLogger().error(ERROR_NO_CA_ID_OR_ACT_ID);
+    return;
+  }
+
+  let postData = {
+    name: getCaNameFromFilePath(configs.inputFilePath),
+    subtype: 'CUSTOM',
+    access_token: configs.accessToken,
+  };
+
+  getLogger().info(`Creating a new custom audience (name: ${postData.name}) ...`);
+
+  postData = querystring.stringify(postData);
+  getLogger().silly(`postData: ${postData}`);
+
+  const options = {
+    hostname: 'graph.facebook.com',
+    port: 443,
+    path: createCAEndpoint(configs.adAccountId),
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Content-Length': Buffer.byteLength(postData),
+    },
+  };
+
+  const req = https.request(options, (res) => {
+    getLogger().verbose(`statusCode: ${res.statusCode}`);
+    getLogger().debug(`headers: ${JSON.stringify(res.headers)}`);
+
+    res.setEncoding('utf8');
+    res.on('data', (d) => {
+      d = JSON.parse(d);
+      if (d.error) {
+        getLogger().error(`Custom audience creation failed. API responded:\n${JSON.stringify(d.error)}`);
+      } else if (d.id) {
+        getLogger().info(`Created a new custom audience (id: ${d.id})`);
+        configs.customAudienceId = d.id;
+        callback(configs);
+      } else {
+        getLogger().error(`Unknown error when creating custom audience. Response: ${JSON.stringify(d)}`);
+      }
+    });
+  });
+
+  req.on('error', (err) => {
+    getLogger().error(err.message);
+  });
+
+  req.write(postData);
+  req.end();
+};
+
+export const getCaNameFromFilePath = (
+  path: string,
+): string => {
+  // append today's date at the end
+  const date = new Date();
+  const dateString = '_' + date.toISOString().slice(0, 10);
+  // extract file name and remove extension (the last .something)
+  return path.replace(/^.*[\\\/]/, '').replace(/\.[^\.]+$/, '') + dateString;
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;

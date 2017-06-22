@@ -18,3 +18,7 @@ All notable changes to this project will be documented in this file.
 ## 1.1.0 - 2017-06-15
 
 - MDFU now supports uploading custom audience. This is specified through commands, see updated README
+
+## 1.1.1 - 2017-06-21
+
+- Supports creating a new custom audience and upload to it. To do so, specify --adAccountId instead of --customAudienceId
