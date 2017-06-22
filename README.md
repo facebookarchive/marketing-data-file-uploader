@@ -143,7 +143,7 @@ For each file you upload you need to provide a corresponding column mapping file
 |header | Whether the file has header row or not | Yes |
 |delimiter | The delimiter for column.  comma for CSV, tab for TSV, etc...| Yes |
 |mapping| The mapping for columns in the file.  key-value pair represents "column index": "column type".  For more detailed description for each column type, please see **Column Types** section below| Yes |
-|infoForNormalization| Format of your dob field to help with the normalization. See **infoForNormalization** section below for more info | No |
+|format| Format of your dob field to help with the normalization. See **foramt** section below for more info | No |
 |customTypeInfo| Info for the key-value pairs of custom_data fields. See **customTypeInfo** section below for more info. | No |
 
 #### Column Types for 'mapping' field
@@ -157,7 +157,7 @@ For each file you upload you need to provide a corresponding column mapping file
 | match_keys.xxxxx | Yes | Yes | The identifier info used to match people.  xxxxx needs to be replaced with the match key type such as email, phone, etc... For list of available match key types, please see 'Key name' column in [this table](https://developers.intern.facebook.com/docs/marketing-api/offline-conversions#match-keys)|
 | custom_data.xxxxx | No | No | Additional information about the conversion event.  For example, send store location ID as custom_data.location_id or product category as custom_data.category |
 
-#### infoForNormalization
+#### format
 
 Provide more information about the formatting of certain types of columns
 

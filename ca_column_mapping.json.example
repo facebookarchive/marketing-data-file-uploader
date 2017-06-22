@@ -20,7 +20,7 @@
     "15": "match_keys.gen",
     "16": "match_keys.age"
   },
-  "infoForNormalization": {
+  "format": {
     "dob": "MM/DD/YY"
   }
 }

@@ -25,7 +25,7 @@
     "20": "currency",
     "21": "custom_data.store_num"
   },
-  "infoForNormalization": {
+  "format": {
     "dob": "MM/DD/YY",
     "event_time": {
       "timeFormat": "ISO8601"

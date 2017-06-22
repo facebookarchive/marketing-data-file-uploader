@@ -43,11 +43,11 @@ export const parseMappingInfo = (
   err: ?Error,
 } => {
   const mappingInfo = JSON.parse(mappingInfoStr);
-  const {mapping, infoForNormalization, customTypeInfo} = mappingInfo;
+  const {mapping, infoForNormalization, format, customTypeInfo} = mappingInfo;
   return {
     colMappingInfo: {
       mapping: mapping,
-      infoForNormalization: infoForNormalization,
+      infoForNormalization: format ? format : infoForNormalization,
       customTypeInfo: customTypeInfo,
     },
     fileDelimiter: mappingInfo.delimiter,
