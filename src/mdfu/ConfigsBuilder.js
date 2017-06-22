@@ -30,6 +30,8 @@ import {
   MODE_VER,
 } from './FeedUploaderConstants';
 
+import { version } from '../../package.json';
+
 import type { ConfigErrorType } from './ConfigOptions';
 
 const path = require('path');
@@ -42,6 +44,11 @@ export const buildConfigs = (
   if (!commandLineArgs.mode ||
       !SUPPORTED_MODES.includes(commandLineArgs.mode)) {
     return {err: new Error(ERROR_NO_MODE)};
+  }
+
+  if (commandLineArgs.mode === MODE_VER) {
+    console.log(`v${version}`);
+    return {err: null};
   }
 
   const defaultMappingFile = DEFAULT_COLUMN_MAPPING_FILE[commandLineArgs.mode];

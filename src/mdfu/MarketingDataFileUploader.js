@@ -19,7 +19,6 @@
    MODE_OC,
    MODE_VER,
  } from './FeedUploaderConstants';
- import { version } from '../../package.json';
  import { UNSUPPORTED_MODE } from './ErrorTypes';
  import { createCustomAudience } from './EventsUploader';
 
@@ -58,7 +57,6 @@
         }
         break;
       case MODE_VER:
-        console.log(`v${version}`);
         break;
       default:
         throw new Error(UNSUPPORTED_MODE);
