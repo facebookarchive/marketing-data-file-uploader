@@ -24,7 +24,10 @@ export const readConfigsFromFile = (
   configFilePath: string
 ): UserSuppliedConfigs => {
   try {
-    return filterOptions(yaml.safeLoad(fs.readFileSync(configFilePath, 'utf8')));
+    return filterOptions(yaml.safeLoad(
+      fs.readFileSync(configFilePath, 'utf8'),
+      {schema: yaml.FAILSAFE_SCHEMA},
+    ));
   } catch (err) {
     throw new Error(`${ERROR_CANNOT_PARSE_CONFIG_FILE}: ${err.message}`);
   }
@@ -67,9 +70,14 @@ const filterOptions = (
   const configs = CONFIG_OPTIONS.reduce((configs, configOption) => {
     if (parsedOptions[configOption.field] !== undefined) {
       configs[configOption.field] = parsedOptions[configOption.field];
+      if (configOption.numeric) {
+        configs[configOption.field] = Number(configs[configOption.field]);
+      }
     }
     return configs;
   }, {});
-  configs.mode = parsedOptions.mode; // keep the mode
+  if (parsedOptions.mode) {
+    configs.mode = parsedOptions.mode; // keep the mode
+  }
   return configs;
 };

@@ -22,3 +22,7 @@ All notable changes to this project will be documented in this file.
 ## 1.1.1 - 2017-06-21
 
 - Supports creating a new custom audience and upload to it. To do so, specify --adAccountId instead of --customAudienceId
+
+## 1.1.2 - 2017-06-29
+
+- Fixes a bug in parsing large IDs from config file resulting in random shift of values

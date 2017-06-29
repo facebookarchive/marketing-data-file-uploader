@@ -33,8 +33,11 @@ type ConfigOption = {
 
 // - field: Name of the field or
 // - validator: RegExp or string or array of values or function for validation
-// - optional: under these modes the option is optional
-// - skip: under these modes skip validation (unused option)
+// - optional: Under these modes the option is optional
+// - skip: Under these modes skip validation (unused option)
+// - numeric: All configs are parsed as strings. Converted to number if this is set
+//            Note that fbids are 64-bit and is out of the range of js integers
+//            Therefore all fbids need to remain strings throughout
 export const CONFIG_OPTIONS: Array<ConfigOption> = [
   {
     field: 'accessToken',
@@ -130,6 +133,7 @@ export const CONFIG_OPTIONS: Array<ConfigOption> = [
     description: 'Number of events included in each API request (1-2000)',
     optional: [ MODE_OC, MODE_CA, MODE_VER ],
     skip: [ MODE_VER ],
+    numeric: true,
   },
   {
     field: 'testOnly',

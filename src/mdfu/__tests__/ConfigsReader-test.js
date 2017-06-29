@@ -19,7 +19,7 @@ describe('readConfigsFromFile', () => {
       path.join(__dirname, 'test_config_reader.yml')
     );
     expect(configs).toEqual({
-      dataSetId: 38373873832838,
+      dataSetId: '38373873832838',
       inputFilePath: '/PATH/TO/FEED/FILE',
       fileDelimiter: ',',
       uploadTag: 'Offline Sales',

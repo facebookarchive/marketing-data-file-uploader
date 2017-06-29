@@ -34,7 +34,7 @@ DEFAULT_CONFIG_FILE[MODE_CA] = 'ca_file_uploader.conf.yml';
 export const DEFAULT_APP_CONFIGS = {
   batchSize: 500,
   logging: 'info',
-  uploadTagPrefix: 'Offline Conversions'
+  uploadTagPrefix: 'MDFU'
 };
 
 export const MIN_TEST_SAMPLE_SIZE = 100;
