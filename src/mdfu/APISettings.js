@@ -31,6 +31,7 @@ export const datasetEndpoint = (
     case MODE_OC:
       id = configs.dataSetId;
       edge = 'events';
+      break;
     default:
       throw new Error(UNSUPPORTED_MODE);
   }
