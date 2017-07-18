@@ -72,12 +72,11 @@ export const parseAndNormalizeFeedFile = (
 
       if (batchData.length % configs.batchSize === 0) {
         const curBatch = batchData;
-        const validBatch = removeInvalidEvents(batchData, numEventsTotal);
         batchData = [];
         scheduleBatchUpload(
           uploadJobQueue,
           curBatch,
-          buildPostRequestPayload(validBatch, caSchema, configs, uploadSessionTag),
+          buildPostRequestPayload(curBatch, caSchema, configs, uploadSessionTag, numEventsTotal),
           numEventsTotal,
           uploadSessionTag,
           configs,
@@ -89,11 +88,10 @@ export const parseAndNormalizeFeedFile = (
     })
     .on('end', () => {
       if (batchData.length > 0) {
-        const validBatch = removeInvalidEvents(batchData, numEventsTotal);
         scheduleBatchUpload(
           uploadJobQueue,
           batchData,
-          buildPostRequestPayload(validBatch, caSchema, configs, uploadSessionTag),
+          buildPostRequestPayload(batchData, caSchema, configs, uploadSessionTag, numEventsTotal),
           numEventsTotal,
           uploadSessionTag,
           configs,

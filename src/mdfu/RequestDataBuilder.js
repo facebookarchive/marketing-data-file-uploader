@@ -27,23 +27,33 @@ export const buildPostRequestPayload = (
   caSchema: ?Array<string>,
   configs: FeedUploaderConfigs,
   uploadSessionTag: string,
+  numEvents: number,
 ): string => {
   let postData = {
     'data': undefined,
     'payload': undefined,
     'access_token': configs.accessToken,
     'upload_tag': uploadSessionTag,
+    'progress': undefined,
   };
+  const validEvents = removeInvalidEvents(events, numEvents);
 
   switch (configs.mode) {
     case MODE_OC:
-      postData.data = JSON.stringify(events);
+      postData.data = JSON.stringify(validEvents);
+      if (!configs.uploadTag) {
+        const progress = {
+          'start_inclusive': numEvents - events.length,
+          'end_exclusive': numEvents,
+        };
+        postData.progress = JSON.stringify(progress);
+      }
       break;
     case MODE_CA:
       if(!caSchema) {
         throw Error('CA Schema is missing.');
       }
-      postData.payload = buildCAPayload(events, caSchema);
+      postData.payload = buildCAPayload(validEvents, caSchema);
       break;
     default:
       throw new Error(UNSUPPORTED_MODE);
