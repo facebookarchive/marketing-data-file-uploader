@@ -33,7 +33,7 @@ export const datasetEndpoint = (
       edge = 'events';
       break;
     default:
-      throw new Error(UNSUPPORTED_MODE);
+      throw new Error(UNSUPPORTED_MODE.description);
   }
   return `${GRAPH_API_BASE_URL}/v${MARKETING_API_VER}/${id}/${edge}`;
 };

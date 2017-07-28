@@ -56,7 +56,7 @@ export const buildPostRequestPayload = (
       postData.payload = buildCAPayload(validEvents, caSchema);
       break;
     default:
-      throw new Error(UNSUPPORTED_MODE);
+      throw new Error(UNSUPPORTED_MODE.description);
   }
 
   for (const key in postData) {

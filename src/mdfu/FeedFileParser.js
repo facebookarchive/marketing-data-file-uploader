@@ -63,7 +63,7 @@ const getSignalsSchema = (mode: string): Object => {
       Schema = CASchema;
       break;
     default:
-      throw new Error(UNSUPPORTED_MODE);
+      throw new Error(UNSUPPORTED_MODE.description);
   }
   return Schema;
 };

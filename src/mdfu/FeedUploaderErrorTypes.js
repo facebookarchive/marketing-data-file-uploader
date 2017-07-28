@@ -9,4 +9,7 @@
  * @flow
  */
 
-export const FILE_DELIMITER_NOT_DETECTED = 'Delimiter Not Detected in the input file.';
+export const FILE_DELIMITER_NOT_DETECTED = {
+  type: 'FILE_DELIMITER_NOT_DETECTED',
+  description: 'Delimiter Not Detected in the input file.'
+};

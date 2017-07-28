@@ -29,7 +29,7 @@ export const readConfigsFromFile = (
       {schema: yaml.FAILSAFE_SCHEMA},
     ));
   } catch (err) {
-    throw new Error(`${ERROR_CANNOT_PARSE_CONFIG_FILE}: ${err.message}`);
+    throw new Error(`${ERROR_CANNOT_PARSE_CONFIG_FILE.description}: ${err.message}`);
   }
 };
 

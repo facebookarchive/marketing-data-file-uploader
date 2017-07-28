@@ -9,10 +9,10 @@
  * @flow
  */
 
-import { batchUploadCallback, uploadEventsBatch } from './EventsUploader';
+import {batchUploadCallback, uploadEventsBatch} from './EventsUploader';
 
-import type { batchUploadCallbackType } from './EventsUploader';
-import type { FeedUploaderConfigs } from './ConfigTypes';
+import type {batchUploadCallbackType} from './EventsUploader';
+import type {FeedUploaderConfigs} from './ConfigTypes';
 
 const async = require('async');
 
@@ -23,30 +23,30 @@ export const buildUploadsQueue = (
 };
 
 export const scheduleBatchUpload = (
- jobQueue: Object,
- normalizedEventsBatch: Array<?Object>,
- postData: string,
- numEvents: number,
- uploadSessionTag: string,
- configs: FeedUploaderConfigs,
+  jobQueue: Object,
+  normalizedEventsBatch: Array<?Object>,
+  postData: string,
+  numEvents: number,
+  uploadSessionTag: string,
+  configs: FeedUploaderConfigs,
 ): void => {
   if (normalizedEventsBatch.length > 0) {
     jobQueue.push({
-      normalizedEventsBatch: normalizedEventsBatch,
-      postData: postData,
-      uploadSessionTag: uploadSessionTag,
-      numEvents: numEvents,
-      configs: configs,
-    },
-    uploadSessionTag,
-    batchUploadCallback
+        normalizedEventsBatch: normalizedEventsBatch,
+        postData: postData,
+        uploadSessionTag: uploadSessionTag,
+        numEvents: numEvents,
+        configs: configs,
+      },
+      uploadSessionTag,
+      batchUploadCallback
     );
   }
 };
 
 const uploadBatch = (
- data: NormalizedBatchData,
- callback: batchUploadCallbackType,
+  data: NormalizedBatchData,
+  callback: batchUploadCallbackType,
 ): void => {
   uploadEventsBatch(
     data.normalizedEventsBatch,

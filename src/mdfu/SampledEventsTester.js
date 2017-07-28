@@ -10,7 +10,7 @@
  */
 
 import { feedFileFullPath } from './FeedFileHandler';
-import { getLogger } from './Logger';
+import { getLogger, getLoggerAWS } from './Logger';
 import { parseAndNormalizeFeedLine } from './FeedFileParser';
 import {
   NORMALIZATION_ERROR_THRESHOLD,
@@ -93,7 +93,7 @@ const checkSampledEvents = (
 ): void => {
   const rowName = MODE_ROW_NAMES[configs.mode];
   getLogger().info(`STEP 1. Sampled ${rowName} validation test`);
-  const err = checkInvalidSignalRate(normalizedEvents, rowName);
+  const err = checkInvalidSignalRate(normalizedEvents, rowName, configs);
   if (err) {
     callback(err);
   } else {
@@ -104,6 +104,7 @@ const checkSampledEvents = (
 const checkInvalidSignalRate = (
   normalizedEvents: Array<NormalizationResult>,
   rowName: string,
+  configs: FeedUploaderConfigs,
 ): ?Error => {
 
   // Only check ratio of completed rejected signal that didn't produce
@@ -121,14 +122,25 @@ const checkInvalidSignalRate = (
     `(${errorRate * 100.0}%) signals were invalid`);
 
   if (errorRate > NORMALIZATION_ERROR_THRESHOLD) {
-    return new Error(
-      `${ERROR_SAMPLE_NORMALIZATION_ERRORS}: \n\n`
-      + humanReadableNormalizationErrors(normalizedEvents)
-      + `\n${numRejected} ${rowName} could not be normalized due to error(s).\n\n`
-      + '* After fixing errors in the data, try running the tool in'
-      + ' --testOnly again to check the fixes.\n'
-      + '* Make sure to apply the fix to the entire file, not just sample rows.\n'
-    );
+    if (configs.aws) {
+      return new Error(
+        JSON.stringify({
+          err: ERROR_SAMPLE_NORMALIZATION_ERRORS,
+          event: humanReadableNormalizationErrors(normalizedEvents),
+          numRejected: `${numRejected}`,
+          rowName: `${rowName}`
+        })
+      );
+    } else {
+      return new Error(
+        `${ERROR_SAMPLE_NORMALIZATION_ERRORS.description}: \n\n`
+        + humanReadableNormalizationErrors(normalizedEvents, configs)
+        + `\n${numRejected} ${rowName} could not be normalized due to error(s).\n\n`
+        + '* After fixing errors in the data, try running the tool in'
+        + ' --testOnly again to check the fixes.\n'
+        + '* Make sure to apply the fix to the entire file, not just sample rows.\n'
+      );
+    }
   }
 
   return null;

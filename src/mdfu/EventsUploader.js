@@ -13,15 +13,15 @@ import {
   datasetEndpoint,
   createCAEndpoint,
 } from './APISettings';
-import type { FeedUploaderConfigs } from './ConfigTypes';
-import { getBatchSigStr, logBatchUploadStart, logBatchUploadEnd } from './UploadSession';
+import type {FeedUploaderConfigs} from './ConfigTypes';
+import {getBatchSigStr, logBatchUploadStart, logBatchUploadEnd} from './UploadSession';
 import {
   MODE_ROW_NAMES,
   MODE_CA,
   MODE_OC,
 } from './FeedUploaderConstants';
-import { getLogger } from './Logger';
-import { getValidEvents } from './RequestDataBuilder';
+import {getLogger, getLoggerAWS} from './Logger';
+import {getValidEvents} from './RequestDataBuilder';
 import {
   UNSUPPORTED_MODE,
   ERROR_NO_CA_ID_OR_ACT_ID,
@@ -64,11 +64,19 @@ export const batchUploadCallback = (
       `Successfully uploaded ${getValidEvents(events).length} ${rowName}.`
     );
   } else {
-    getLogger().error(
-      `Rows ${getBatchSigStr({offset: fileOffset, size: events.length})} ` +
-      `- Error uploading ${getValidEvents(events).length} ${rowName}: ` +
-      err.message
-    );
+    if (configs.aws) {
+      getLoggerAWS().error(JSON.stringify({
+        Rows: `${getBatchSigStr({offset: fileOffset, size: events.length})}`,
+        rowName: `${rowName}`,
+        err: err.message
+      }));
+    } else {
+      getLogger().error(
+        `Rows ${getBatchSigStr({offset: fileOffset, size: events.length})} ` +
+        `- Error uploading ${getValidEvents(events).length} ${rowName}: ` +
+        err.message
+      );
+    }
   }
 };
 
@@ -87,7 +95,6 @@ const _postEvents = (
   uploadSessionTag: string,
   callback: batchUploadCallbackType,
 ): void => {
-
   const options = {
     hostname: 'graph.facebook.com',
     port: 443,
@@ -119,7 +126,14 @@ const _postEvents = (
   });
 
   req.on('error', (err) => {
-    getLogger().error(`${fileOffset+1} - ${fileOffset+events.length}: ${err.message}`);
+    if (configs.aws) {
+      getLogger().error(JSON.stringify({
+        Rows: `${fileOffset + 1} - ${fileOffset + events.length}`,
+        err: err
+      }));
+    } else {
+      getLogger().error(`${fileOffset + 1} - ${fileOffset + events.length}: ${err.message}`);
+    }
     callback(null, fileOffset, events, configs);
   });
 
@@ -152,7 +166,11 @@ export const createCustomAudience = (
   }
 
   if (!configs.adAccountId) {
-    getLogger().error(ERROR_NO_CA_ID_OR_ACT_ID);
+    if (configs.aws) {
+      getLoggerAWS().error(ERROR_NO_CA_ID_OR_ACT_ID);
+    } else {
+      getLogger().error(ERROR_NO_CA_ID_OR_ACT_ID.description);
+    }
     return;
   }
 
@@ -186,19 +204,31 @@ export const createCustomAudience = (
     res.on('data', (d) => {
       d = JSON.parse(d);
       if (d.error) {
-        getLogger().error(`Custom audience creation failed. API responded:\n${JSON.stringify(d.error)}`);
+        if (configs.aws) {
+          getLoggerAWS().error(JSON.stringify({failedAPIRes: `${JSON.stringify(d.error)}`}));
+        } else {
+          getLogger().error(`Custom audience creation failed. API responded:\n${JSON.stringify(d.error)}`);
+        }
       } else if (d.id) {
         getLogger().info(`Created a new custom audience (id: ${d.id})`);
         configs.customAudienceId = d.id;
         callback(configs);
       } else {
-        getLogger().error(`Unknown error when creating custom audience. Response: ${JSON.stringify(d)}`);
+        if (configs.aws) {
+          getLoggerAWS().error(JSON.stringify({unknownErrRes: `${JSON.stringify(d)}`}))
+        } else {
+          getLogger().error(`Unknown error when creating custom audience. Response: ${JSON.stringify(d)}`);
+        }
       }
     });
   });
 
   req.on('error', (err) => {
-    getLogger().error(err.message);
+    if (configs.aws) {
+      getLoggerAWS().error(err.message);
+    } else {
+      getLogger().error(err.message);
+    }
   });
 
   req.write(postData);
@@ -214,19 +244,3 @@ export const getCaNameFromFilePath = (
   // extract file name and remove extension (the last .something)
   return path.replace(/^.*[\\\/]/, '').replace(/\.[^\.]+$/, '') + dateString;
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-;

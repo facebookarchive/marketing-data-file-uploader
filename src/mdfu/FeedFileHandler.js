@@ -12,7 +12,7 @@
 import { buildUploadsQueue, scheduleBatchUpload } from './BatchUploadScheduler';
 import { parseAndNormalizeFeedLine } from './FeedFileParser';
 import { createUploadSessionTag } from './UploadSession';
-import { getLogger } from './Logger';
+import { getLogger, getLoggerAWS } from './Logger';
 import {
   LINE_BREAK_REGEX,
   MODE_OC,
@@ -84,7 +84,15 @@ export const parseAndNormalizeFeedFile = (
       }
     })
     .on('error', (err) => {
-      getLogger().error(`Error reading input file: ${configs.inputFilePath}`, err);
+      if (configs.aws) {
+        getLoggerAWS().error(JSON.stringify({
+          inputFilePath: `${configs.inputFilePath}`,
+          err: err
+        }));
+      }
+      else {
+        getLogger().error(`Error reading input file: ${configs.inputFilePath}`, err);
+      }
     })
     .on('end', () => {
       if (batchData.length > 0) {

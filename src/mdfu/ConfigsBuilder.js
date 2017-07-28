@@ -43,7 +43,7 @@ export const buildConfigs = (
 
   if (!commandLineArgs.mode ||
       !SUPPORTED_MODES.includes(commandLineArgs.mode)) {
-    return {err: new Error(ERROR_NO_MODE)};
+    return {err: new Error(ERROR_NO_MODE.description)};
   }
 
   if (commandLineArgs.mode === MODE_VER) {
@@ -134,14 +134,14 @@ const validateConfigOptions = (
         && !configOption.validator(configs[configOption.field])) {
         errors.push({
           field: configOption.field,
-          message: ERROR_REQUIRED_CONFIG_VALUE_INVALID,
+          message: ERROR_REQUIRED_CONFIG_VALUE_INVALID.description,
         });
       }
     } else {
       if (!configOption.optional.includes(configs.mode)) {
         errors.push({
           field: configOption.field,
-          message: ERROR_REQUIRED_CONFIG_OPTION_MISSING,
+          message: ERROR_REQUIRED_CONFIG_OPTION_MISSING.description,
         });
       }
     }

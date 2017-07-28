@@ -36,6 +36,7 @@ export type FeedUploaderConfigs = {
   uploadTagPrefix: string;
   silent?: boolean;
   logging?: string;
+  aws?: string;
 };
 
 // Type for handling data read from config flie or command line args

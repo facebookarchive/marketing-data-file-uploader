@@ -44,7 +44,7 @@ export const detectDelimiterFromLines = (
       return;
     }
   }
-  throw new Error(FILE_DELIMITER_NOT_DETECTED);
+  throw new Error(FILE_DELIMITER_NOT_DETECTED.description);
 };
 
 const parseTokens = (

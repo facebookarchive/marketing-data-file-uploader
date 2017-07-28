@@ -142,4 +142,11 @@ export const CONFIG_OPTIONS: Array<ConfigOption> = [
     noValue: true,
     skip: [ MODE_VER ],
   },
+  {
+    field: 'aws',
+    description: 'Output in JSON format for AWS process',
+    optional: [ MODE_VER, MODE_CA, MODE_OC ],
+    noValue: true,
+    skip: [ MODE_VER, MODE_CA, MODE_OC ],
+  },
 ];
