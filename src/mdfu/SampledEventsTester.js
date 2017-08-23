@@ -134,7 +134,7 @@ const checkInvalidSignalRate = (
     } else {
       return new Error(
         `${ERROR_SAMPLE_NORMALIZATION_ERRORS.description}: \n\n`
-        + humanReadableNormalizationErrors(normalizedEvents, configs)
+        + humanReadableNormalizationErrors(normalizedEvents)
         + `\n${numRejected} ${rowName} could not be normalized due to error(s).\n\n`
         + '* After fixing errors in the data, try running the tool in'
         + ' --testOnly again to check the fixes.\n'

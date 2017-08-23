@@ -15,6 +15,8 @@ import type {
   CustomTypeInfoType,
 } from '../SignalsSchema/SignalsSchemaValidationTypes';
 
+import type { HTTPSOptions } from './HTTPSOptions';
+
 // List of all config options required for the app to be run.
 // ConfigsBuilder reads values from 1) default values, 2) config file, and
 // 3) command line arguments to build this.
@@ -37,6 +39,7 @@ export type FeedUploaderConfigs = {
   silent?: boolean;
   logging?: string;
   aws?: string;
+  httpsOptions?: ?HTTPSOptions;
 };
 
 // Type for handling data read from config flie or command line args
@@ -53,6 +56,7 @@ export type UserSuppliedConfigs = {
   testOnly?: boolean;
   uploadTag?: string;
   uploadTagPrefix?: string;
+  httpsOptions?: ?HTTPSOptions;
 };
 
 export type ColumnMappingInfo = {

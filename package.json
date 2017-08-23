@@ -49,7 +49,7 @@
     "fbjs-scripts": "0.7.1",
     "flow-bin": "0.47.0",
     "jest-cli": "19.0.2",
-    "nexe": "^1.1.2",
+    "nexe": "1.1.2",
     "node-inspector": "0.12.8"
   },
   "dependencies": {

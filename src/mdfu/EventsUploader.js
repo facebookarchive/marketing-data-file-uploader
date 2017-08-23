@@ -104,6 +104,7 @@ const _postEvents = (
       'Content-Type': 'application/x-www-form-urlencoded',
       'Content-Length': Buffer.byteLength(postData),
     },
+    ...configs.httpsOptions,
   };
 
   const req = https.request(options, (res) => {
@@ -126,15 +127,7 @@ const _postEvents = (
   });
 
   req.on('error', (err) => {
-    if (configs.aws) {
-      getLogger().error(JSON.stringify({
-        Rows: `${fileOffset + 1} - ${fileOffset + events.length}`,
-        err: err
-      }));
-    } else {
-      getLogger().error(`${fileOffset + 1} - ${fileOffset + events.length}: ${err.message}`);
-    }
-    callback(null, fileOffset, events, configs);
+    callback(err, fileOffset, events, configs);
   });
 
   req.write(postData);

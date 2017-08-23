@@ -52,6 +52,7 @@ const TEST_SAMPLE_CONFIG = {
     }
   },
   logging: 'info',
+  httpsOptions: {},
 };
 
 describe('buildConfigs', () => {

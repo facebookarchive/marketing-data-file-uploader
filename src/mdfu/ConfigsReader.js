@@ -13,6 +13,8 @@ import { CONFIG_OPTIONS } from './ConfigOptions';
 import { ERROR_CANNOT_PARSE_CONFIG_FILE } from './ErrorTypes';
 import { SUPPORTED_MODES } from './FeedUploaderConstants';
 
+import { parseHttpOptions, buildHttpsOptions } from './HTTPOptionsParser';
+
 const fs = require('fs');
 
 import type { UserSuppliedConfigs } from './ConfigTypes';
@@ -37,7 +39,10 @@ export const readConfigsFromCommandLineArgs = (
   commandLineArgs: Array<string> = process.argv,
 ): UserSuppliedConfigs => {
   const program = new commander.Command();
-  CONFIG_OPTIONS.reduce((
+
+  CONFIG_OPTIONS.sort((a, b): number => {
+    return a.field < b.field ? -1 : (a.field > b.field ? 1 : 0);
+  }).reduce((
     program: commander.Command,
     configOption,
   ): commander.Command => {
@@ -59,8 +64,13 @@ export const readConfigsFromCommandLineArgs = (
     });
   });
 
-  program.parse(commandLineArgs);
-  return filterOptions(program);
+  parseHttpOptions(program).parse(commandLineArgs);
+  const httpsOptions = buildHttpsOptions(program);
+
+  return {
+    ...filterOptions(program),
+    httpsOptions: httpsOptions,
+  };
 };
 
 // Only take known option types
