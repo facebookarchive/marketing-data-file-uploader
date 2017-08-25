@@ -60,8 +60,10 @@
     "csv-string": "2.3.2",
     "event-stream": "3.3.4",
     "js-yaml": "^3.8.2",
+    "line-by-line": "^0.1.5",
     "react": "15.4.2",
     "through2": "2.0.3",
+    "wait-until": "0.0.2",
     "winston": "2.3.1"
   }
 }

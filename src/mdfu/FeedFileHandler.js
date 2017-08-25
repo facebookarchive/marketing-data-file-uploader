@@ -28,15 +28,19 @@ import {
 import type { FeedUploaderConfigs } from './ConfigTypes';
 import type { MappingsType } from '../SignalsSchema/SignalsSchemaValidationTypes';
 
-const es = require('event-stream');
-const fs = require('fs');
 const path = require('path');
-const split = require('split');
+const waitUntil = require('wait-until');
+const async = require('async');
+const LineByLineReader = require('line-by-line');
+
+const MAX_QUEUE_LENGTH = 2;
+const WAIT_INTERVAL = 500;
+const WAIT_TIMES = 20;
 
 export const parseAndNormalizeFeedFile = (
   configs: FeedUploaderConfigs,
 ): void => {
-  const rstream = fs.createReadStream(feedFileFullPath(configs.inputFilePath), {
+  const lr = new LineByLineReader(feedFileFullPath(configs.inputFilePath), {
     flags: 'r',
     encoding: 'utf-8',
   });
@@ -54,58 +58,59 @@ export const parseAndNormalizeFeedFile = (
     caSchema = extractCASchema(configs.colMappingInfo.mapping);
   }
 
-  rstream
-    .pipe(split(LINE_BREAK_REGEX))
-    .pipe(es.mapSync(line => {
-      linesRead += 1;
-      if (linesRead === 1 && configs.fileHasHeader) {
-        return;
-      }
-
-      if (line.length > 0) {
-        batchData.push(parseAndNormalizeFeedLine(
-          line,
-          configs,
-        ).normalizedValue);
-        numEventsTotal += 1;
-      }
-
-      if (batchData.length % configs.batchSize === 0) {
-        const curBatch = batchData;
-        batchData = [];
-        scheduleBatchUpload(
-          uploadJobQueue,
-          curBatch,
-          buildPostRequestPayload(curBatch, caSchema, configs, uploadSessionTag, numEventsTotal),
-          numEventsTotal,
-          uploadSessionTag,
-          configs,
-        );
-      }
-    })
-    .on('error', (err) => {
-      if (configs.aws) {
-        getLoggerAWS().error(JSON.stringify({
-          inputFilePath: `${configs.inputFilePath}`,
-          err: err
-        }));
-      }
-      else {
-        getLogger().error(`Error reading input file: ${configs.inputFilePath}`, err);
-      }
-    })
-    .on('end', () => {
-      if (batchData.length > 0) {
-        scheduleBatchUpload(
-          uploadJobQueue,
-          batchData,
-          buildPostRequestPayload(batchData, caSchema, configs, uploadSessionTag, numEventsTotal),
-          numEventsTotal,
-          uploadSessionTag,
-          configs,
-        );
-      }
-    }));
+  lr.on('line', function (line) {
+    lr.pause();
+    linesRead += 1;
+    if (linesRead === 1 && configs.fileHasHeader) {
+      lr.resume();
+      return;
+    }
+    if (line.length > 0) {
+      batchData.push(parseAndNormalizeFeedLine(
+        line,
+        configs,
+      ).normalizedValue);
+      numEventsTotal += 1;
+    }
+    if (batchData.length % configs.batchSize === 0) {
+      const curBatch = batchData;
+      batchData = [];
+      scheduleBatchUpload(
+        uploadJobQueue,
+        curBatch,
+        buildPostRequestPayload(curBatch, caSchema, configs, uploadSessionTag, numEventsTotal),
+        numEventsTotal,
+        uploadSessionTag,
+        configs,
+      );
+      _checkQueueSizeThenResume(lr, uploadJobQueue);
+    }
+    else{
+      lr.resume();
+    }
+  })
+  .on('error', function (err) {
+    if (configs.aws) {
+      getLoggerAWS().error(JSON.stringify({
+        inputFilePath: `${configs.inputFilePath}`,
+        err: err
+      }));
+    }
+    else {
+      getLogger().error(`Error reading input file: ${configs.inputFilePath}`, err);
+    }
+  }).on('end', function () {
+    if (batchData.length > 0) {
+      scheduleBatchUpload(
+        uploadJobQueue,
+        batchData,
+        buildPostRequestPayload(batchData, caSchema, configs, uploadSessionTag, numEventsTotal),
+        numEventsTotal,
+        uploadSessionTag,
+        configs,
+      );
+    }
+  });
 };
 
 export const feedFileFullPath = (
@@ -113,4 +118,22 @@ export const feedFileFullPath = (
 ): string => {
   return path.isAbsolute(inputFilePath) ? inputFilePath :
     path.join(process.cwd(), inputFilePath);
+};
+
+const _checkQueueSizeThenResume = (
+  lr: LineByLineReader,
+  uploadJobQueue: async.priorityQueue,
+): void => {
+  waitUntil()
+    .interval(WAIT_INTERVAL)
+    .times(WAIT_TIMES)
+    .condition(() => {
+      return uploadJobQueue.length() < MAX_QUEUE_LENGTH;
+    })
+    .done((result) => {
+      if(!result){
+        getLogger().info('Job is taking too long to consume, continue to proceed.');
+      }
+      lr.resume();
+    });
 };

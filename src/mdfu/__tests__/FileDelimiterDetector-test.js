@@ -123,7 +123,7 @@ describe('detectDelimiterFromLines', () => {
         'a,b,c,d,e',
       ], callback);
     };
-    expect(delimiterTest).toThrow(new Error(FILE_DELIMITER_NOT_DETECTED));
+    expect(delimiterTest).toThrow(new Error(FILE_DELIMITER_NOT_DETECTED.description));
   });
 
   it('should throw for single column which is invalid', () => {
@@ -137,7 +137,7 @@ describe('detectDelimiterFromLines', () => {
         'a',
       ], callback);
     };
-    expect(delimiterTest).toThrow(new Error(FILE_DELIMITER_NOT_DETECTED));
+    expect(delimiterTest).toThrow(new Error(FILE_DELIMITER_NOT_DETECTED.description));
   });
 });
 
