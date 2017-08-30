@@ -14,6 +14,8 @@ import { getAvailableHTTPSOptions } from './HTTPSOptions';
 
 const commander = require('commander');
 
+const fs = require('fs');
+
 export const parseHttpOptions = (
   program: commander.Command,
 ): commander.Command => {
@@ -37,6 +39,14 @@ export const buildHttpsOptions = (
 
       if (httpOptionName === 'rejectUnauthorized') {
         httpsOptions[httpOptionName] = parsedOptions[option] === 'true';
+      } else if (httpOptionName.match(/^key|cert|ca|pfx$/)) {
+        if (httpOptionName === 'ca') {
+          httpsOptions['ca'] = parsedOptions[option].split(',').map(filename => {
+            return fs.readFileSync(filename);
+          });
+        } else {
+          httpsOptions[httpOptionName] = fs.readFileSync(parsedOptions[option]);
+        }
       } else {
         httpsOptions[httpOptionName] = parsedOptions[option];
       };

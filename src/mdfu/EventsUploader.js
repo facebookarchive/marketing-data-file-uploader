@@ -187,6 +187,7 @@ export const createCustomAudience = (
       'Content-Type': 'application/x-www-form-urlencoded',
       'Content-Length': Buffer.byteLength(postData),
     },
+    ...configs.httpsOptions,
   };
 
   const req = https.request(options, (res) => {
