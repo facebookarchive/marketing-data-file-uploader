@@ -26,3 +26,7 @@ All notable changes to this project will be documented in this file.
 ## 1.1.2 - 2017-06-29
 
 - Fixes a bug in parsing large IDs from config file resulting in random shift of values
+
+## 1.1.3 - 2017-09-18
+
+- Adding support for order_id and item_number fields.  See https://www.facebook.com/business/help/1772588746090250 for details

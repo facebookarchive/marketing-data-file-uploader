@@ -1,6 +1,6 @@
 {
   "name": "marketing-data-file-uploader",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "Feed File Uploader for Facebook Offline Conversions API",
   "scripts": {
     "babel-node": "./node_modules/.bin/babel-node",
