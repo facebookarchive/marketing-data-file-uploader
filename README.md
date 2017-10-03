@@ -97,6 +97,12 @@ $./build/marketing-data-file-uploader offline-conversions --accessToken YOUR_ACC
 ...
 ```
 
+**Options 4**. Download pre-build binary deployable for windows/mac
+
+- windows binary deployable: [Download latest here](https://github.com/facebookincubator/marketing-data-file-uploader/blob/master/releases/windows/latest/marketing-data-file-uploader.exe)
+- mac binary deployable: [Download latest here](https://github.com/facebookincubator/marketing-data-file-uploader/blob/master/releases/mac/latest/marketing-data-file-uploader)
+
+
 ### 3. Set up Facebook app
 
 You need to create a FB app to make requests to FB Marketing API.
