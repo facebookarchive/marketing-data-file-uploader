@@ -8,7 +8,7 @@ import {SUPPORTED_MODES} from './FeedUploaderConstants';
 
 export const ERROR_NO_MODE = {
   type: 'ERROR_NO_MODE',
-  description: 'Command is not specified. Avaialbe ones are:\n' +
+  description: 'Command is not specified. Available ones are:\n' +
     SUPPORTED_MODES.join('\n') + '\n\nExample:\n\n' +
     'marketing-data-file-uploader offline-conversions ' +
     '--columnMappingFilePath oca_column_mapping.json.example ' +
