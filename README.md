@@ -168,10 +168,10 @@ For each file you upload you need to provide a corresponding column mapping file
 |Column Type| Required by `offline-conversions`? | Required by `custome-audiences` | Description |
 |-----------|-----------|-------------|-------------|
 |event_time | Yes | No | Use ISO8601 format or unixtime timestamp |
-|event_name | Yes | No | See event_time row in the [data parameters table](https://developers.intern.facebook.com/docs/marketing-api/offline-conversions/#data-parameters)|
+|event_name | Yes | No | See event_time row in the [data parameters table](https://developers.facebook.com/docs/marketing-api/offline-conversions/#data-parameters)|
 |currency   | Yes | No | Three-letter ISO currency for this conversion event. Required for Purchase events. |
 | value | Yes | No | Value of conversion event. Required for Purchase event. ex) 16.00 |
-| match_keys.xxxxx | Yes | Yes | The identifier info used to match people.  xxxxx needs to be replaced with the match key type such as email, phone, etc... For list of available match key types, please see 'Key name' column in [this table](https://developers.intern.facebook.com/docs/marketing-api/offline-conversions#match-keys)|
+| match_keys.xxxxx | Yes | Yes | The identifier info used to match people.  xxxxx needs to be replaced with the match key type such as email, phone, etc... For list of available match key types, please see 'Key name' column in [this table](https://developers.facebook.com/docs/marketing-api/offline-conversions#match-keys)|
 | custom_data.xxxxx | No | No | Additional information about the conversion event.  For example, send store location ID as custom_data.location_id or product category as custom_data.category |
 
 #### format
