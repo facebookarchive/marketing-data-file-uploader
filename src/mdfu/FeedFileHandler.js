@@ -33,9 +33,9 @@ const waitUntil = require('wait-until');
 const async = require('async');
 const LineByLineReader = require('line-by-line');
 
-const MAX_QUEUE_LENGTH = 2;
-const WAIT_INTERVAL = 500;
-const WAIT_TIMES = 20;
+const MAX_QUEUE_LENGTH = 5;
+const WAIT_INTERVAL = 1000;
+const WAIT_TIMES = 60;
 
 export const parseAndNormalizeFeedFile = (
   configs: FeedUploaderConfigs,
