@@ -113,6 +113,12 @@ export const CONFIG_OPTIONS: Array<ConfigOption> = [
     skip: [ MODE_VER ],
   },
   {
+    field: 'apiVersion',
+    description: 'Version of Facebook Marketing API to use',
+    optional: [ MODE_OC, MODE_CA, MODE_VER ],
+    skip: [ MODE_VER ],
+  },
+  {
     field: 'silent',
     description: 'Silently process files without interacting externally',
     optional: [ MODE_OC, MODE_CA, MODE_VER ],

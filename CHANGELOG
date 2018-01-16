@@ -38,3 +38,7 @@ All notable changes to this project will be documented in this file.
 ## 1.1.5 - 2017-11-08
 
 - Increases job processing time limit.   
+
+## 1.1.6 - 2018-01-16
+
+- Added apiVersion as a config option

@@ -181,7 +181,7 @@ export const createCustomAudience = (
   const options = {
     hostname: 'graph.facebook.com',
     port: 443,
-    path: createCAEndpoint(configs.adAccountId),
+    path: createCAEndpoint(configs),
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',

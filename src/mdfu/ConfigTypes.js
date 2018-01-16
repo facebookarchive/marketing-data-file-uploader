@@ -33,6 +33,7 @@ export type FeedUploaderConfigs = {
   fileDelimiter: string;
   fileHasHeader?: ?boolean;
   inputFilePath: string;
+  apiVersion?: string;
   testOnly?: boolean;
   uploadTag?: string;
   uploadTagPrefix: string;
@@ -53,6 +54,7 @@ export type UserSuppliedConfigs = {
   adAccountId?: string;
   fileDelimiter?: string;
   inputFilePath?: string;
+  apiVersion?: string;
   testOnly?: boolean;
   uploadTag?: string;
   uploadTagPrefix?: string;

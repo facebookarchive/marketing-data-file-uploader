@@ -19,6 +19,12 @@ import { UNSUPPORTED_MODE } from './ErrorTypes';
 
 import type { FeedUploaderConfigs } from './ConfigTypes';
 
+const getApiVersion = (
+  configs: FeedUploaderConfigs
+): string => {
+  return configs.apiVersion ? configs.apiVersion : MARKETING_API_VER;
+};
+
 export const datasetEndpoint = (
   configs: FeedUploaderConfigs,
 ): string => {
@@ -35,15 +41,16 @@ export const datasetEndpoint = (
     default:
       throw new Error(UNSUPPORTED_MODE.description);
   }
-  return `${GRAPH_API_BASE_URL}/v${MARKETING_API_VER}/${id}/${edge}`;
+  return `${GRAPH_API_BASE_URL}/v${getApiVersion(configs)}/${id}/${edge}`;
 };
 
 export const createCAEndpoint = (
-  adAccountId: string,
+  configs: FeedUploaderConfigs,
 ): string => {
+  let id = configs.adAccountId;
   // make sure ad account id has the 'act_' prefix
-  if (!adAccountId.match(/act_\d+/)) {
-    adAccountId = 'act_' + adAccountId;
+  if (!id.match(/act_\d+/)) {
+    id = 'act_' + id;
   }
-  return `${GRAPH_API_BASE_URL}/v${MARKETING_API_VER}/${adAccountId}/customaudiences`;
+  return `${GRAPH_API_BASE_URL}/v${getApiVersion(configs)}/${id}/customaudiences`;
 }
