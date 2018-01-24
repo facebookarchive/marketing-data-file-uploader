@@ -45,26 +45,4 @@ describe('readConfigsFromCommandLineArgs', () => {
     ]);
     expect(configs.accessToken).toEqual('ABCDE');
   });
-
-  it('should read https options from command line arguments', () => {
-    const configs = readConfigsFromCommandLineArgs([
-      'node',
-      'OfflinConversionsFeedUploader.js',
-      'offline-conversions',
-      '--https-rejectUnauthorized',
-      'false',
-    ]);
-    expect(configs.httpsOptions.rejectUnauthorized).toBeFalsy();
-  });
-
-  it('should only read known https options from command line arguments', () => {
-    const configs = readConfigsFromCommandLineArgs([
-      'node',
-      'OfflinConversionsFeedUploader.js',
-      'offline-conversions',
-      '--https-unknownOption',
-      '111',
-    ]);
-    expect(configs.httpsOptions['unknownOption']).toBeUndefined();
-  });
 });

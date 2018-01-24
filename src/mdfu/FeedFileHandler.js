@@ -34,7 +34,7 @@ const async = require('async');
 const LineByLineReader = require('line-by-line');
 
 const MAX_QUEUE_LENGTH = 5;
-const WAIT_INTERVAL = 1000;
+const WAIT_INTERVAL = 5000;
 const WAIT_TIMES = 60;
 
 export const parseAndNormalizeFeedFile = (
@@ -132,7 +132,7 @@ const _checkQueueSizeThenResume = (
     })
     .done((result) => {
       if(!result){
-        getLogger().info('Job is taking too long to consume, continue to proceed.');
+        getLogger().warn('Jobs accumulating in the upload queue, possibly due to slow uploads.');
       }
       lr.resume();
     });

@@ -27,8 +27,13 @@ import {
   ERROR_NO_CA_ID_OR_ACT_ID,
 } from './ErrorTypes';
 
-const https = require('https');
 const querystring = require('querystring');
+const request = require('requestretry');
+const APIErrorTypes = require('./APIErrorTypes');
+
+const MAX_RETRIES = 10;   // Retry 10 times.
+const RETRY_DELAY = 5000; // Wait 5s before trying again.
+const RETRY_STRATEGY = request.RetryStrategies.HTTPOrNetworkError; // retry on 5xx or network errors.
 
 export const uploadEventsBatch = (
   events: Array<Object>,
@@ -64,7 +69,13 @@ export const batchUploadCallback = (
       `Successfully uploaded ${getValidEvents(events).length} ${rowName}.`
     );
   } else {
-    if (configs.aws) {
+    const error_subcode = APIErrorTypes.getErrorSubcode(JSON.parse(err.message));
+    if(error_subcode === APIErrorTypes.API_ERROR_SUBCODE_OVERLAPPED_PROGRESS) {
+      getLogger().info(
+        `Rows ${getBatchSigStr({offset: fileOffset, size: events.length})} ` +
+        `were previously uploaded.`
+        );
+    } else if (configs.aws) {
       getLoggerAWS().error(JSON.stringify({
         Rows: `${getBatchSigStr({offset: fileOffset, size: events.length})}`,
         rowName: `${rowName}`,
@@ -95,43 +106,37 @@ const _postEvents = (
   uploadSessionTag: string,
   callback: batchUploadCallbackType,
 ): void => {
-  const options = {
-    hostname: 'graph.facebook.com',
-    port: 443,
-    path: datasetEndpoint(configs),
+  request({
+    url: datasetEndpoint(configs),
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
       'Content-Length': Buffer.byteLength(postData),
     },
-    ...configs.httpsOptions,
-  };
-
-  const req = https.request(options, (res) => {
+    body: postData,
+    fullResponse: true, // full response object not just the body.
+    maxAttempts: MAX_RETRIES,
+    retryDelay: RETRY_DELAY,
+    retryStrategy: RETRY_STRATEGY
+  })
+  .then(function (res) {
     getLogger().verbose(`statusCode: ${res.statusCode}`);
     getLogger().debug(`headers: ${JSON.stringify(res.headers)}`);
 
-    res.setEncoding('utf8');
-    res.on('data', (d) => {
-      logBatchUploadEnd(
-        uploadSessionTag,
-        {offset: fileOffset, size: events.length},
-      );
-      callback(
-        res.statusCode === 200 ? null : new Error(d),
-        fileOffset,
-        events,
-        configs,
-      );
-    });
-  });
-
-  req.on('error', (err) => {
+    logBatchUploadEnd(
+      uploadSessionTag,
+      {offset: fileOffset, size: events.length},
+    );
+    callback(
+      res.statusCode === 200 ? null : new Error(res.body),
+      fileOffset,
+      events,
+      configs,
+    );
+  })
+  .catch(function(err) {
     callback(err, fileOffset, events, configs);
   });
-
-  req.write(postData);
-  req.end();
 
   logBatchUploadStart(
     uploadSessionTag,
@@ -178,55 +183,49 @@ export const createCustomAudience = (
   postData = querystring.stringify(postData);
   getLogger().silly(`postData: ${postData}`);
 
-  const options = {
-    hostname: 'graph.facebook.com',
-    port: 443,
-    path: createCAEndpoint(configs),
+  request({
+    url: createCAEndpoint(configs),
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
       'Content-Length': Buffer.byteLength(postData),
     },
-    ...configs.httpsOptions,
-  };
-
-  const req = https.request(options, (res) => {
+    body: postData,
+    fullResponse: true, // full response object not just the body.
+    maxAttempts: MAX_RETRIES,
+    retryDelay: RETRY_DELAY,
+    retryStrategy: RETRY_STRATEGY
+  })
+  .then(function (res) {
     getLogger().verbose(`statusCode: ${res.statusCode}`);
     getLogger().debug(`headers: ${JSON.stringify(res.headers)}`);
 
-    res.setEncoding('utf8');
-    res.on('data', (d) => {
-      d = JSON.parse(d);
-      if (d.error) {
-        if (configs.aws) {
-          getLoggerAWS().error(JSON.stringify({failedAPIRes: `${JSON.stringify(d.error)}`}));
-        } else {
-          getLogger().error(`Custom audience creation failed. API responded:\n${JSON.stringify(d.error)}`);
-        }
-      } else if (d.id) {
-        getLogger().info(`Created a new custom audience (id: ${d.id})`);
-        configs.customAudienceId = d.id;
-        callback(configs);
+    const d = JSON.parse(res.body);
+    if (d.error) {
+      if (configs.aws) {
+       getLoggerAWS().error(JSON.stringify({failedAPIRes: `${JSON.stringify(d.error)}`}));
       } else {
-        if (configs.aws) {
-          getLoggerAWS().error(JSON.stringify({unknownErrRes: `${JSON.stringify(d)}`}))
-        } else {
-          getLogger().error(`Unknown error when creating custom audience. Response: ${JSON.stringify(d)}`);
-        }
+       getLogger().error(`Custom audience creation failed. API responded:\n${JSON.stringify(d.error)}`);
       }
-    });
-  });
-
-  req.on('error', (err) => {
+    } else if (d.id) {
+     getLogger().info(`Created a new custom audience (id: ${d.id})`);
+     configs.customAudienceId = d.id;
+     callback(configs);
+    } else {
+      if (configs.aws) {
+       getLoggerAWS().error(JSON.stringify({unknownErrRes: `${JSON.stringify(d)}`}))
+      } else {
+       getLogger().error(`Unknown error when creating custom audience. Response: ${JSON.stringify(d)}`);
+      }
+    }
+  })
+  .catch(function(err) {
     if (configs.aws) {
       getLoggerAWS().error(err.message);
     } else {
       getLogger().error(err.message);
     }
   });
-
-  req.write(postData);
-  req.end();
 };
 
 export const getCaNameFromFilePath = (
