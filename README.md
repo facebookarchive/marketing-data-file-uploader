@@ -1,3 +1,6 @@
+# Deprecated
+If you are looking for the tool to automate your offline conversion and custom audience upload to Facebook, please refer to [MDFU V2](https://github.com/facebookincubator/offline-conversion-file-uploader). This tool will no longer be officially maintained and will receive limited support.
+
 # FB Marketing Data File Uploader
 FB Marketing Data File Uploader (referred as 'MDFU' hereinafter) is a command line tool and node.js module that helps Facebook advertisers and marketing partners upload offline transactions and customer lists to the FB marketing API without building their own application for API integration.
 

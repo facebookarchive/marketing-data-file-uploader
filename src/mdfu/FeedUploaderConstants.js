@@ -43,4 +43,4 @@ export const LINE_BREAK_REGEX = /\r\n?|\n/;
 
 export const NORMALIZATION_ERROR_THRESHOLD = 0.1;
 
-export const MARKETING_API_VER = '2.11';
+export const MARKETING_API_VER = '3.1';
